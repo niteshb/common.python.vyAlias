@@ -129,4 +129,5 @@ dmypy.json
 .pyre/
 
 # project specific
-/tests/test-git-aliases/output/*
+/tests/test-git-aliases/output/g.cmd
+
