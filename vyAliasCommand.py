@@ -8,7 +8,6 @@ class vyAliasCommandsTree():
     def __init__(self, aliasInfos):
         assert(len(aliasInfos) == 1)
         aliasInfo = aliasInfos[0]
-        #assert(aliasInfo[0] == [])
         assert('sub-aliases' in aliasInfo[2])
         self.root = vyAliasCommand(*aliasInfo)
     
@@ -107,7 +106,14 @@ class vyAliasCommand():
             self.subAliases.append(ac)
 
     def __getattr__(self, attr):
-        if attr == 'lastchild':
+        if attr == 'firstchild':
+            if self.parent == None:
+                return True
+            elif self.parent.subAliases[0] == self:
+                return True
+            else:
+                return False
+        elif attr == 'lastchild':
             if self.parent == None:
                 return True
             elif self.parent.subAliases[-1] == self:

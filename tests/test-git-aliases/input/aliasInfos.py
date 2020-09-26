@@ -53,15 +53,6 @@ aliasInfosLevel1 = [
         },
     ),
     (
-        ['c'], 
-        ['commit'],
-        {
-            'label': 'commit_editor',
-            'sub-aliases' : [
-            ],
-        },
-    ),
-    (
         ['s'], 
         ['status'],
         {},

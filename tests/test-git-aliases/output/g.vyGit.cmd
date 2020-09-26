@@ -25,13 +25,16 @@ REM Actual start of the program
 :label_start
 if x%VY_GIT_CMD_REMOTE%==x SET VY_GIT_CMD_REMOTE=github
 if x%VY_GIT_CMD_BRANCH%==x SET VY_GIT_CMD_BRANCH=master
-:label_MainShortSwitcher
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_MainShortSwitcher
+
+:label_Switcher
+if x%VY_GIT_CMD_NO_DEBUG%==x echo label_Switcher & REM (Switcher) <- (help)
 if x%1==xh         GOTO label_help
+if x%1==x          GOTO label_help
+if x%1==x-h        GOTO label_help
+if x%1==x--help    GOTO label_help
 if x%1==xa         GOTO label_add
 if x%1==xcm        GOTO label_commit_message
 if x%1==xc         GOTO label_commit
-if x%1==xc         GOTO label_commit_editor
 if x%1==xs         GOTO label_status
 if x%1==xss        GOTO label_status_short
 if x%1==xpl        GOTO label_pull
@@ -45,28 +48,19 @@ if x%1==xi         GOTO label_init
 if x%1==xcl        GOTO label_clone
 if x%1==xb         GOTO label_branch
 if x%1==xdf        GOTO label_difftool
-if x%1==xcon       GOTO label_config
-:label_OtherShortsSwitcher
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_OtherShortsSwitcher
-if x%1==x          GOTO label_help
-if x%1==x-h        GOTO label_help
-if x%1==x--help    GOTO label_help
 if x%1==xdif       GOTO label_difftool
 if x%1==xdiff      GOTO label_difftool
-GOTO label_invalid
-:label_SubCommandsSwitcher
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_SubCommandsSwitcher
+if x%1==xcon       GOTO label_config
+GOTO label_invalid & REM (Switcher) <- (config)
 :label_commit
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_commit
+if x%VY_GIT_CMD_NO_DEBUG%==x echo label_commit & REM (commit) <- (commit_staged)
 if x%2==x          GOTO label_commit_staged
 if x%2==xa         GOTO label_commit_all
 if x%2==xfix       GOTO label_commit_amend
 if x%2==xamend     GOTO label_commit_amend
 GOTO label_invalid & REM (commit) <- (commit_amend)
-:label_commit_editor
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_commit_editor
 :label_remote
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_remote
+if x%VY_GIT_CMD_NO_DEBUG%==x echo label_remote & REM (remote) <- (remote_list)
 if x%2==x          GOTO label_remote_list
 if x%2==xl         GOTO label_remote_list
 if x%2==xlist      GOTO label_remote_list
@@ -75,7 +69,7 @@ if x%2==xset       GOTO label_remote_set
 if x%2==xa         GOTO label_remote_add
 GOTO label_invalid & REM (remote) <- (remote_add)
 :label_branch
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_branch
+if x%VY_GIT_CMD_NO_DEBUG%==x echo label_branch & REM (branch) <- (branch_list)
 if x%2==x          GOTO label_branch_list
 if x%2==xl         GOTO label_branch_list
 if x%2==xlist      GOTO label_branch_list
@@ -87,14 +81,13 @@ if x%2==xdel       GOTO label_branch_delete
 if x%2==xdelU      GOTO label_branch_delete_unmerged
 if x%2==xren       GOTO label_branch_rename
 GOTO label_invalid & REM (branch) <- (branch_rename)
-GOTO label_invalid & REM () <- (config)
 :label_config
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_config
+if x%VY_GIT_CMD_NO_DEBUG%==x echo label_config & REM (config) <- (config_vscode)
 if x%2==xvsc       GOTO label_config_vscode
 if x%2==xso        GOTO label_config_show_origin
 GOTO label_invalid & REM (config) <- (config_show_origin)
 :label_config_show_origin
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_config_show_origin
+if x%VY_GIT_CMD_NO_DEBUG%==x echo label_config_show_origin & REM (config_show_origin) <- (config_show_origin_list)
 if x%3==x          GOTO label_config_show_origin_list
 if x%3==xi         GOTO label_config_show_origin_item
 GOTO label_invalid & REM (config_show_origin) <- (config_show_origin_item)

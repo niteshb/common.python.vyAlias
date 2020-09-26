@@ -23,14 +23,8 @@ GOTO label_start
 ##############################################################
 REM Actual start of the program
 :label_start
-{{ ev[0] }}:label_MainShortSwitcher
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_MainShortSwitcher
-{{ cmd[{vyCOIdx.MainShortSwitcher}] }}:label_OtherShortsSwitcher
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_OtherShortsSwitcher
-{{ cmd[{vyCOIdx.OtherShortsSwitcher}] }}GOTO label_invalid
-:label_SubCommandsSwitcher
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_SubCommandsSwitcher
-{{ cmd[{vyCOIdx.SubCommandsSwitcher}] }}
+{{ ev[0] }}
+{{ cmd[{vyCOIdx.Switcher}] }}
 ##############################################################
 :label_invalid
 echo Invalid command. Type 'g h' to get help
