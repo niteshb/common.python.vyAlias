@@ -6,5 +6,6 @@ from input.subTemplates import cmdTemplates, envVarTemplates
 inputFolder = 'input'
 outputFolder = r'P:\@common\misc\vyGit'
 
-absg = vyAliasBatchScriptGenerator(aliasInfos, envVarInfos, cmdTemplates, envVarTemplates, inputFolder, outputFolder)
+absg = vyAliasBatchScriptGenerator(aliasInfos, envVarInfos, cmdTemplates, 
+envVarTemplates, inputFolder, outputFolder)
 absg.generate()

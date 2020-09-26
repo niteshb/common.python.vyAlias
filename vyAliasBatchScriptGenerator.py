@@ -9,13 +9,15 @@ class vyCOIdx():
     SubCommandsSwitcher = 4
 
 class vyAliasBatchScriptGenerator():
-    def __init__(self, aliasInfos, envVarInfos, cmdTemplates, envVarTemplates, inputFolder, outputFolder):
+    def __init__(self, aliasInfos, envVarInfos, cmdTemplates, envVarTemplates, 
+    inputFolder, outputFolder, outputFileName=None):
         self.aliasInfos = aliasInfos
         self.envVarInfos = envVarInfos
         self.cmdTemplates = cmdTemplates
         self.envVarTemplates = envVarTemplates
         self.inputFolder = inputFolder
         self.outputFolder = outputFolder
+        self.outputFileName = outputFileName
     
     def generate(self):
         aliasInfos = self.aliasInfos
@@ -24,14 +26,14 @@ class vyAliasBatchScriptGenerator():
         envVarTemplates = self.envVarTemplates
         inputFolder = self.inputFolder
         outputFolder = self.outputFolder
-        stars = '*'*80
+        outputFileName = self.outputFileName
         tree = vyAliasCommandsTree(aliasInfos)
 
         envVarOutputs = [''] * len(envVarTemplates)
         cmdOutputs = [''] * len(cmdTemplates) + [''] + ['']
 
         for idx, aliasObj in enumerate(tree.traverse()):
-            if idx == 0:
+            if idx == 0 or aliasObj.traversalState == 'post':
                 continue
             if aliasObj.level == 1:
                 cmdOutputs[vyCOIdx.MainShortSwitcher] += cmdTemplates[0].format(
@@ -62,6 +64,8 @@ class vyAliasBatchScriptGenerator():
                         alias=alias,
                         label=aliasObj.final.label,
                     )
+            if aliasObj.lastchild:
+                cmdOutputs[vyCOIdx.SubCommandsSwitcher] += f'GOTO label_invalid & REM ({aliasObj.parent.final.label}) <- ({aliasObj.final.label})\n'
             if aliasObj.hasChildren:
                 cmdOutputs[vyCOIdx.SubCommandsSwitcher] += f':label_{aliasObj.final.label}\n'
                 cmdOutputs[vyCOIdx.SubCommandsSwitcher] += f'if x%VY_GIT_CMD_NO_DEBUG%==x echo label_{aliasObj.final.label}\n'
@@ -84,10 +88,10 @@ class vyAliasBatchScriptGenerator():
         gTemplate = gTemplate.replace('{ ', '{')
         gTemplate = gTemplate.replace(' }', '}')
         out = gTemplate.format(ev=envVarOutputs, cmd=cmdOutputs)
-        outputFileName = f'{tree.root.aliases[0]}.cmd'
+        if not outputFileName:
+            outputFileName = f'{tree.root.aliases[0]}.cmd'
         outputFilePath = os.path.join(outputFolder, outputFileName)
         print('Output File Path:', outputFilePath)
         with open(outputFilePath, 'w') as ofid:
             ofid.write(out)
             ofid.close()
-

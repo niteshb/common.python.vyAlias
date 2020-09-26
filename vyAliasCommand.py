@@ -1,5 +1,6 @@
 import re
 
+stars80 = '*' * 80
 class Generic():
     pass
 
@@ -84,7 +85,7 @@ class vyAliasCommand():
         self.final.snippet = ' : '.join(self.command_snippet + self.snippet)
         for char in ['<', '>', '&']: # this escaping is not perfect. "<" should not be escaped
             self.final.snippet = self.final.snippet.replace(char, '^' + char)
-        print('*'*80)
+        print(stars80)
         print(self.aliases, "'%s'" % self.final.primaryAlias, self.label)
         if 'sub-aliases' not in keys:
             return
@@ -105,9 +106,21 @@ class vyAliasCommand():
                 prefix=subPrefix)
             self.subAliases.append(ac)
 
+    def __getattr__(self, attr):
+        if attr == 'lastchild':
+            if self.parent == None:
+                return True
+            elif self.parent.subAliases[-1] == self:
+                return True
+            else:
+                return False
+
     def traverse(self):
+        self.traversalState = 'pre'
         yield self
         for subAlias in self.subAliases:
             for _ in subAlias.traverse():
                 yield _
+        self.traversalState = 'post'
+        yield self
 

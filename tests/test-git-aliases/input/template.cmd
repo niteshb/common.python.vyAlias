@@ -15,7 +15,8 @@ REM 'transfer' mode. Here we debug by setting VY_GIT_CMD_NO_DEBUG=<blank>
 :label_transfer_start
 echo Tranferred into batchfile sub call
 set VY_GIT_CMD_NO_DEBUG=
-if x%VY_GIT_CMD_NO_DEBUG%==x echo (0, '%0') (1, '%1') (2, '%2') (3, '%3') (4, '%4') (5, '%5') (6, '%6') (7, '%7') (8, '%8') (9, '%9')
+if x%VY_GIT_CMD_NO_DEBUG%==x echo arguments    :: (0, '%0') (1, '%1') (2, '%2') (3, '%3') (4, '%4') (5, '%5') (6, '%6') (7, '%7') (8, '%8') (9, '%9')
+if x%VY_GIT_CMD_NO_DEBUG%==x echo command line :: %0 %1 %2 %3 %4 %5 %6 %7 %8 %9
 echo ##############################################################
 GOTO label_start
 
@@ -29,8 +30,7 @@ if x%VY_GIT_CMD_NO_DEBUG%==x echo label_OtherShortsSwitcher
 {{ cmd[{vyCOIdx.OtherShortsSwitcher}] }}GOTO label_invalid
 :label_SubCommandsSwitcher
 if x%VY_GIT_CMD_NO_DEBUG%==x echo label_SubCommandsSwitcher
-{{ cmd[{vyCOIdx.SubCommandsSwitcher}] }}GOTO label_invalid
-
+{{ cmd[{vyCOIdx.SubCommandsSwitcher}] }}
 ##############################################################
 :label_invalid
 echo Invalid command. Type 'g h' to get help
