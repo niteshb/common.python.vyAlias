@@ -13,43 +13,17 @@ aliasInfosLevel1 = [
         {},
     ),
     (
-        ['c'],
-        ['commit'],
+        ['cm'],
+        ['commit -m <msg>'],
         {
+            'snippet': 'Commits staged with message provided',
             'label': 'commit_message',
-            'sub-aliases' : [
-                (
-                    [''],
-                    ['-m <msg>'],
-                    {
-                        'snippet': 'Commits staged with message provided',
-                        'label': 'staged',
-                    },
-                ),
-                (
-                    ['a'],
-                    ['-a -m <msg>'],
-                    {
-                        'snippet': 'Stages all & commits with message provided',
-                        'label': 'all',
-                    },
-                ),
-                (
-                    ['fix', 'amend'],
-                    ['--amend'],
-                    {
-                        'snippet': 'Change your previous commit message',
-                        'label': 'amend',
-                    },
-                ),
-            ],
         },
     ),
     (
-        ['ce'], 
+        ['c'],
         ['commit'],
         {
-            'label': 'commit_editor',
             'sub-aliases' : [
                 (
                     [''], 
@@ -67,6 +41,23 @@ aliasInfosLevel1 = [
                         'label': 'all',
                     },
                 ),
+                (
+                    ['fix', 'amend'],
+                    ['--amend'],
+                    {
+                        'snippet': 'Change your previous commit message',
+                        'label': 'amend',
+                    },
+                ),
+            ],
+        },
+    ),
+    (
+        ['c'], 
+        ['commit'],
+        {
+            'label': 'commit_editor',
+            'sub-aliases' : [
             ],
         },
     ),
