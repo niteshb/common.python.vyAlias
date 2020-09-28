@@ -5,12 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "git",
+            "name": "git vyalias",
             "type": "python",
             "request": "launch",
             "program": "main.py",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/tests/test-git-aliases"
+            "cwd": "${workspaceFolder}/tests/test-git-aliases",
+            "args": ["input/config.vyalias", "-o", "output", "-f", "g.vyalias.cmd"]
+        },
+        {
+            "name": "git py",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/tests/test-git-aliases",
+            "args": ["input/config.vyalias.py", "-o", "output", "-f", "g.py.cmd"]
         }
     ]
 }

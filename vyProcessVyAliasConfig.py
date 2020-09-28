@@ -44,7 +44,7 @@ def processAliasLines(lines, startIdx, indent, level=0):
             break
         #print(rline)
         if state == 'aliases':
-            aliases = ['' if alias.lower() == '--vyabsg-null-alias--' else alias.strip() for alias in cline.split(',')]
+            aliases = ['' if alias.strip().lower() == '--vyabsg-null-alias--' else alias.strip() for alias in cline.split(',')]
             aliasInfo = (aliases, [], {})
             aliasInfos.append(aliasInfo)
             print('\n', indent * level, '    %10s:' % 'aliases', aliases)
