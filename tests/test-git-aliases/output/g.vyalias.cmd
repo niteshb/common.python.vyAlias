@@ -119,7 +119,7 @@ GOTO label_exit
 @echo   g us          : git restore --staged ^<file1^> [file2] [file3] ... : Unstage files
 @echo   g rm          : git rm ^<file1^> [file2] [file3] ... : Delete files
 @echo   g i           : git init
-@echo   g cl          : git clone ^<repo-url^> [target-dir] -o %VY_GIT_CMD_REMOTE%
+@echo   g cl          : git clone -o %VY_GIT_CMD_REMOTE% ^<repo-url^> [target-dir]
 @echo   g b           : git branch -a : List all branches
 @echo   g b sw        : git switch ^<branch^>
 @echo   g b csw       : git switch -c ^<branch^> : Create ^& switch branch
@@ -261,7 +261,7 @@ GOTO label_exit
 ##############################################################
 :label_clone
 @echo on
-git clone %2 %3 -o %VY_GIT_CMD_REMOTE%
+git clone -o %VY_GIT_CMD_REMOTE% %2 %3
 @echo off
 GOTO label_exit
 

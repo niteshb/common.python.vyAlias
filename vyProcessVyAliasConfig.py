@@ -1,5 +1,9 @@
 import re
 from pprint import pprint
+from vyDebug import vyDebug, vyDebugLevel
+
+vyd = vyDebug(vyDebugLevel.SILENT)
+vyd.setLevel(0)
 
 def getNextNonBlankLineIdx(lines, startIdx=0):
     for idx in range(startIdx, len(lines)):
@@ -42,12 +46,13 @@ def processAliasLines(lines, startIdx, indent, level=0):
         if cline == '': # got a new line
             idx -= 1
             break
-        #print(rline)
+        vyd.print3(rline)
         if state == 'aliases':
             aliases = ['' if alias.strip().lower() == '--vyabsg-null-alias--' else alias.strip() for alias in cline.split(',')]
             aliasInfo = (aliases, [], {})
             aliasInfos.append(aliasInfo)
-            print('\n', indent * level, '    %10s:' % 'aliases', aliases)
+            prepend = '\n' if vyd.level > 1 else ''
+            vyd.print1(prepend + indent * level, '    %10s:' % 'aliases', aliases)
             state = 'post-aliases'
         elif state == 'post-aliases':
             if curIndent == indent * (2 * level + 1): # command, label, help
@@ -56,7 +61,7 @@ def processAliasLines(lines, startIdx, indent, level=0):
                         if attr == 'label' and val.lower() == '--vyabsg-null-label--':
                             val = ''
                         aliasInfo[2][attr] = val
-                        print(indent * level, '    %10s:' % attr, '"%s"' % val)
+                        vyd.print2(indent * level, '    %10s:' % attr, '"%s"' % val)
                         break
                 if val == None:
                     cmd = cline
@@ -64,9 +69,9 @@ def processAliasLines(lines, startIdx, indent, level=0):
                         if cmd == '--vyabsg-empty-command-suffix--':
                             cmd = ''
                         aliasInfo[1].append(cmd)
-                        print(indent * level, '    %10s:' % 'command', '"%s"' % cmd)
+                        vyd.print2(indent * level, '    %10s:' % 'command', '"%s"' % cmd)
                     else:
-                        print(indent * level, '    %10s:' % 'command', '--no-cmd--')
+                        vyd.print2(indent * level, '    %10s:' % 'command', '--no-cmd--')
             elif curIndent == indent * 2 * (level + 1): # subaliases
                 idx, subAliasInfos = processAliasLines(lines, idx, indent=indent, level=level+1)
                 aliasInfo[2]['sub-aliases'] = subAliasInfos
@@ -110,7 +115,7 @@ def processEnvVarLines(lines, startIdx, indent):
                 envVarInfo = (envName, {})
                 envVarInfos.append(envVarInfo)
                 state = 'default'
-                print('    %10s:' % 'envvar', '"%s"' % envName)
+                vyd.print1('    %10s:' % 'envvar', '"%s"' % envName)
 
             else:
                 idx -= 1
@@ -121,14 +126,14 @@ def processEnvVarLines(lines, startIdx, indent):
                 if default := findAtrribute('default', cline):
                     envVarInfo[1]['default'] = default
                     state = 'post-default'
-                    print('        %10s:' % 'default', '"%s"' % default)
+                    vyd.print2('        %10s:' % 'default', '"%s"' % default)
                 else:
                     raise Exception('Expected default')
             elif state == 'post-default':
                 for attr in ['target', 'Targets']:
                     if val := findAtrribute(attr, cline):
                         envVarInfo[1][attr] = val
-                        print('        %10s:' % attr, '"%s"' % val)
+                        vyd.print2('        %10s:' % attr, '"%s"' % val)
                         break
                 if val == None:
                     raise Exception('Unexpected state')
@@ -144,12 +149,13 @@ def vyProcessVyAliasConfig(configFilePath):
     foundAliasInfoRoot = False
     foundEnvVars = False
     indent = None
+    envVarInfos = []
     while idx < numLines:
         idx = getNextNonBlankLineIdx(lines, idx)
         line = lines[idx].rstrip()
-        #print(line)
+        vyd.print5(line)
         if line != line.strip():
-            print(f'line({idx+1}): ', line)
+            vyd.print0(f'line({idx+1}): ', line)
             raise Exception('A section must start unindented')
         if line.startswith('envvar:'):
             if foundEnvVars == True:

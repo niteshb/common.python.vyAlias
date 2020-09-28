@@ -4,10 +4,13 @@
 			"path": "."
 		},
 		{
-			"path": "..\\vyImport"
+			"path": "../vyImport"
 		},
 		{
-			"path": "..\\..\\misc\\vyGit"
+			"path": "../../misc/vyGit"
+		},
+		{
+			"path": "../vyDebug"
 		}
 	],
 	"settings": {}

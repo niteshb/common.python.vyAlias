@@ -27,7 +27,7 @@ REM Actual start of the program
 {{cmd[{vyCOIdx.Switcher}]}}
 ##############################################################
 :label_invalid
-echo Invalid command. Type 'g h' to get help
+echo Invalid command. Type '%0 h' to get help
 GOTO label_exit
 
 ##############################################################
