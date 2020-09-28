@@ -1,6 +1,5 @@
 import re
 
-stars80 = '*' * 80
 class Generic():
     pass
 
@@ -84,8 +83,6 @@ class vyAliasCommand():
         self.final.snippet = ' : '.join(self.command_snippet + self.snippet)
         for char in ['<', '>', '&']: # this escaping is not perfect. "<" should not be escaped
             self.final.snippet = self.final.snippet.replace(char, '^' + char)
-        print(stars80)
-        print(self.aliases, "'%s'" % self.final.primaryAlias, self.label)
         if 'sub-aliases' not in keys:
             return
         assert(len(commands) <= 1)

@@ -1,4 +1,6 @@
 import os
+from vyImport import vyLoadModuleFromFilePath
+from .vyProcessVyAliasConfig import vyProcessVyAliasConfig
 from .vyAliasCommand import vyAliasCommand, vyAliasCommandsTree
 
 class vyCOIdx():
@@ -6,8 +8,21 @@ class vyCOIdx():
     HelpSnippets = 1
     Commands = 2
 
-def vyAliasBatchScriptGenerator(aliasInfos, envVarInfos, cmdTemplates, 
-envVarTemplates, inputFolder, outputFolder, outputFileName=None):
+def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName=None):
+    ext = os.path.splitext(configFilePath)[1]
+    if ext == '.vyalias':
+        aliasInfos, envVarInfos = vyProcessVyAliasConfig(configFilePath)
+    elif ext == '.py':
+        config = vyLoadModuleFromFilePath(configFilePath)
+        aliasInfos, envVarInfos = config.aliasInfos, config.envVarInfos
+
+    cmdTemplates = None
+    envVarTemplates = None
+    moduleFolder = os.path.dirname(os.path.realpath(__file__))
+    subTemplates = vyLoadModuleFromFilePath(os.path.join(moduleFolder, 'subTemplates.py'))
+    cmdTemplates = subTemplates.cmdTemplates
+    envVarTemplates = subTemplates.envVarTemplates
+
     tree = vyAliasCommandsTree(aliasInfos)
     tree.root.final.label = 'Switcher'
 
@@ -47,11 +62,11 @@ envVarTemplates, inputFolder, outputFolder, outputFileName=None):
                     label=aliasObj.final.label,
                 )
 
-    for environmentVar in envVarInfos:
-        suffix = environmentVar[0]
-        default = environmentVar[1]
-        target = suffix.lower()
-        Target = target[0].upper() + target[1:]
+    for envVarInfo in envVarInfos:
+        suffix = envVarInfo[0]
+        default = envVarInfo[1]['default']
+        target = envVarInfo[1]['target'] if 'target' in envVarInfo[1] else suffix.lower()
+        Target = envVarInfo[1]['Target'] if 'Target' in envVarInfo[1] else target[0].upper() + target[1:]
         for idx, envVarTemplate in enumerate(envVarTemplates):
             envVarOutputs[idx] += envVarTemplate.format(
                 suffix=suffix,
@@ -60,10 +75,8 @@ envVarTemplates, inputFolder, outputFolder, outputFileName=None):
                 Target=Target,
             )
     # procesing done
-    gTemplate = open(os.path.join(inputFolder, 'template.cmd')).read()
+    gTemplate = open(os.path.join(moduleFolder, 'template.cmd')).read()
     gTemplate = gTemplate.format(vyCOIdx=vyCOIdx)
-    gTemplate = gTemplate.replace('{ ', '{')
-    gTemplate = gTemplate.replace(' }', '}')
     out = gTemplate.format(ev=envVarOutputs, cmd=cmdOutputs)
     if not outputFileName:
         outputFileName = f'{tree.root.aliases[0]}.cmd'

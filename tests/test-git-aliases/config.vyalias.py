@@ -1,3 +1,9 @@
+envVarInfos = [
+    # (SUFFIX, default, {[target], [Target]})
+    ('REMOTE', {'default': 'github', }),
+    ('BRANCH', {'default': 'master', }),
+]
+
 aliasInfosLevel1 = [
     (
         ['h', '', '-h', '--help'], 
