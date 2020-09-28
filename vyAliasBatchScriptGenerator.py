@@ -32,8 +32,9 @@ def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName
     aliasQueue = [_ for _ in tree.root.subAliases]
     for aliasObj in aliasQueue:
         if aliasObj.firstchild:
-            cmdOutputs[vyCOIdx.Switcher] += f':label_{aliasObj.parent.final.label}\n'
-            cmdOutputs[vyCOIdx.Switcher] += f'if x%VY_GIT_CMD_NO_DEBUG%==x echo label_{aliasObj.parent.final.label} & REM ({aliasObj.parent.final.label}) <- ({aliasObj.final.label})\n'
+            cmdOutputs[vyCOIdx.Switcher] += cmdTemplates[3].format(
+                parent_label=aliasObj.parent.final.label,
+                label=aliasObj.final.label)
 
         for alias in aliasObj.aliases:
             cmdOutputs[vyCOIdx.Switcher] += cmdTemplates[0].format(

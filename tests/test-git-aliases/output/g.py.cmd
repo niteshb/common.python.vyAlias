@@ -27,7 +27,7 @@ if x%VY_GIT_CMD_REMOTE%==x SET VY_GIT_CMD_REMOTE=github
 if x%VY_GIT_CMD_BRANCH%==x SET VY_GIT_CMD_BRANCH=master
 
 :label_Switcher
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_Switcher & REM (Switcher) <- (help)
+if x%VY_ALIAS_BATCH_GEN_NO_DEBUG%==x echo label_Switcher & REM (Switcher) <- (help)
 if x%1==xh         GOTO label_help
 if x%1==x          GOTO label_help
 if x%1==x-h        GOTO label_help
@@ -53,14 +53,14 @@ if x%1==xdiff      GOTO label_difftool
 if x%1==xcon       GOTO label_config
 GOTO label_invalid & REM (Switcher) <- (config)
 :label_commit
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_commit & REM (commit) <- (commit_staged)
+if x%VY_ALIAS_BATCH_GEN_NO_DEBUG%==x echo label_commit & REM (commit) <- (commit_staged)
 if x%2==x          GOTO label_commit_staged
 if x%2==xa         GOTO label_commit_all
 if x%2==xfix       GOTO label_commit_amend
 if x%2==xamend     GOTO label_commit_amend
 GOTO label_invalid & REM (commit) <- (commit_amend)
 :label_remote
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_remote & REM (remote) <- (remote_list)
+if x%VY_ALIAS_BATCH_GEN_NO_DEBUG%==x echo label_remote & REM (remote) <- (remote_list)
 if x%2==x          GOTO label_remote_list
 if x%2==xl         GOTO label_remote_list
 if x%2==xlist      GOTO label_remote_list
@@ -69,7 +69,7 @@ if x%2==xset       GOTO label_remote_set
 if x%2==xa         GOTO label_remote_add
 GOTO label_invalid & REM (remote) <- (remote_add)
 :label_branch
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_branch & REM (branch) <- (branch_list)
+if x%VY_ALIAS_BATCH_GEN_NO_DEBUG%==x echo label_branch & REM (branch) <- (branch_list)
 if x%2==x          GOTO label_branch_list
 if x%2==xl         GOTO label_branch_list
 if x%2==xlist      GOTO label_branch_list
@@ -82,12 +82,12 @@ if x%2==xdelU      GOTO label_branch_delete_unmerged
 if x%2==xren       GOTO label_branch_rename
 GOTO label_invalid & REM (branch) <- (branch_rename)
 :label_config
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_config & REM (config) <- (config_vscode)
+if x%VY_ALIAS_BATCH_GEN_NO_DEBUG%==x echo label_config & REM (config) <- (config_vscode)
 if x%2==xvsc       GOTO label_config_vscode
 if x%2==xso        GOTO label_config_show_origin
 GOTO label_invalid & REM (config) <- (config_show_origin)
 :label_config_show_origin
-if x%VY_GIT_CMD_NO_DEBUG%==x echo label_config_show_origin & REM (config_show_origin) <- (config_show_origin_list)
+if x%VY_ALIAS_BATCH_GEN_NO_DEBUG%==x echo label_config_show_origin & REM (config_show_origin) <- (config_show_origin_list)
 if x%3==x          GOTO label_config_show_origin_list
 if x%3==xi         GOTO label_config_show_origin_item
 GOTO label_invalid & REM (config_show_origin) <- (config_show_origin_item)
@@ -119,7 +119,7 @@ GOTO label_exit
 @echo   g us          : git restore --staged ^<file1^> [file2] [file3] ... : Unstage files
 @echo   g rm          : git rm ^<file1^> [file2] [file3] ... : Delete files
 @echo   g i           : git init
-@echo   g cl          : git clone ^<repo-url^> [target-dir]
+@echo   g cl          : git clone ^<repo-url^> [target-dir] -o %VY_GIT_CMD_REMOTE%
 @echo   g b           : git branch -a : List all branches
 @echo   g b sw        : git switch ^<branch^>
 @echo   g b csw       : git switch -c ^<branch^> : Create ^& switch branch
@@ -261,7 +261,7 @@ GOTO label_exit
 ##############################################################
 :label_clone
 @echo on
-git clone %2 %3
+git clone %2 %3 -o %VY_GIT_CMD_REMOTE%
 @echo off
 GOTO label_exit
 

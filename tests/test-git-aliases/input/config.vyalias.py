@@ -150,7 +150,7 @@ aliasInfosLevel1 = [
     ),
     (
         ['cl'],
-        ['clone <repo-url> [target-dir]'],
+        ['clone <repo-url> [target-dir] -o %VY_GIT_CMD_REMOTE%'],
         {},
     ),
     (

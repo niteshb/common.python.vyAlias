@@ -65,7 +65,7 @@ g
         i
             init
         cl
-            clone <repo-url> [target-dir]
+            clone <repo-url> [target-dir] -o %VY_GIT_CMD_REMOTE%
         b
             branch
                 --vyabsg-null-alias--, l, list
