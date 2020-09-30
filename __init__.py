@@ -1,3 +1,3 @@
 from .vyProcessVyAliasConfig import vyProcessVyAliasConfig
-from .vyAliasCommand import vyAliasCommand, vyAliasCommandsTree
-from .vyAliasBatchScriptGenerator import vyAliasBatchScriptGenerator, vyCOIdx
+from .vyAliasCommand import VyAliasCommand, VyAliasCommandsTree
+from .vyAliasBatchScriptGenerator import vyAliasBatchScriptGenerator, VyCOIdx

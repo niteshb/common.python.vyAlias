@@ -3,12 +3,12 @@ import re
 class Generic():
     pass
 
-class vyAliasCommandsTree():
+class VyAliasCommandsTree():
     def __init__(self, aliasInfos):
         assert(len(aliasInfos) == 1)
         aliasInfo = aliasInfos[0]
         assert('sub-aliases' in aliasInfo[2])
-        self.root = vyAliasCommand(*aliasInfo)
+        self.root = VyAliasCommand(*aliasInfo)
     
     def traverse(self):
         return self.root.traverse()
@@ -18,7 +18,7 @@ rootPrefix.command = ''
 rootPrefix.alias = ''
 rootPrefix.label = ''
 
-class vyAliasCommand():
+class VyAliasCommand():
     def __init__(self, aliases, commands, aliasDict, 
         level=0, parent=None,
         prefix=rootPrefix):
@@ -98,7 +98,7 @@ class vyAliasCommand():
             subPrefix.alias = self.final.primaryAlias
             subPrefix.label = self.final.label
 
-            ac = vyAliasCommand(*aliasInfo, level=level+1, parent=self, 
+            ac = VyAliasCommand(*aliasInfo, level=level+1, parent=self, 
                 prefix=subPrefix)
             self.subAliases.append(ac)
 

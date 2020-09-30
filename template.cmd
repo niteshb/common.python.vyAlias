@@ -24,7 +24,7 @@ GOTO label_start
 REM Actual start of the program
 :label_start
 {{ev[0]}}
-{{cmd[{vyCOIdx.Switcher}]}}
+{{cmd[{VyCOIdx.Switcher}]}}
 ##############################################################
 :label_invalid
 echo Invalid command. Type '%0 h' to get help
@@ -34,9 +34,9 @@ GOTO label_exit
 :label_help
 @echo on
 @echo Command Options:
-{{cmd[{vyCOIdx.HelpSnippets}]}}@echo.
+{{cmd[{VyCOIdx.HelpSnippets}]}}@echo.
 {{ev[1]}}@echo off
 GOTO label_exit
 
-{{cmd[{vyCOIdx.Commands}]}}##############################################################
+{{cmd[{VyCOIdx.Commands}]}}##############################################################
 :label_exit

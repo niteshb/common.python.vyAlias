@@ -1,24 +1,75 @@
 import re
+from typing import List, Union, Tuple, Dict, Callable, Any, Optional
 from pprint import pprint
-from vyDebug import vyDebug, vyDebugLevel
+from vyDebug import VyDebug, VyDebugLevel
 
-vyd = vyDebug(vyDebugLevel.SILENT)
-vyd.setLevel(0)
+AliasInfoType = Tuple[List[str], List[str], Dict[str, str]]
 
-def getNextNonBlankLineIdx(lines, startIdx=0):
-    for idx in range(startIdx, len(lines)):
+vyd = VyDebug(VyDebugLevel.SILENT)
+vyd.level = 0
+
+def getFirstNonBlankLineIdx(lines: List[str], startIdx: int=0) -> int:
+    """First index in lines at or after startIdx which is not blank
+
+    Args:
+        lines (List[str]): An array of strings, representing lines from the vyalias config file.
+        startIdx (int, optional): Index to start looking in lines. Defaults to 0.
+
+    Returns:
+        int: first index in lines at or after startIdx which is not blank
+    """
+    numLines = len(lines)
+    if startIdx >= numLines:
+        return numLines
+    for idx in range(startIdx, numLines):
         line = lines[idx].strip()
         if not line:
             continue
         return idx
+    return idx + 1
 
-def processAliasLinesRoot(lines, startIdx, indent=None):
+def processAliasLinesRoot(lines: List[str], startIdx: int=0, indent: Optional[str]=None) -> Tuple[int, List[AliasInfoType], str]:
+    """Processes alias lines root node
+
+    Args:
+        lines (List[str]): An array of strings, representing lines from the vyalias config file.
+        startIdx (int, optional): Index in lines to start processing. 
+            Defaults to 0.
+        indent (Optional[str], optional): Indentation for the config file. 
+            Should be a tab or a few spaces, hopefully not more than 4, and not 
+            less than 2.
+            Defaults to None if indent is not yet discovered.
+
+    Returns:
+        A tuple (idx, aliasInfos, indent) where:
+            idx (int): Next index to process in lines
+            aliasInfos (List[AliasInfoType]): A list of aliasInfo
+            indent (str): The indent that was passed or that was discovered if None was passed
+    """
     if indent == None:
         indent = re.search('^ *', lines[startIdx + 1]).group(0)
     idx, aliasInfos = processAliasLines(lines, startIdx, indent, level=0)
     return idx, aliasInfos, indent
 
-def processAliasLines(lines, startIdx, indent, level=0):
+def processAliasLines(lines: List[str], startIdx: int, indent: Optional[str], level: int=0) -> Tuple[int, List[AliasInfoType]]:
+    """[summary]
+
+    Args:
+        lines (List[str]): An array of strings, representing lines from the vyalias config file.
+        startIdx (int): Index in lines to start processing. 
+            Defaults to 0.
+        indent (Optional[str]): Indentation for the config file. 
+        level (int, optional): The alias tree level at which processing is to be done. Defaults to 0.
+
+    Raises:
+        Exception: If indentation is not a mutiple of indent passed
+        Exception: For more indent than expected by syntax at a level
+
+    Returns:
+        A tuple (idx, aliasInfos) where:
+            idx (int): Next index to process in lines
+            aliasInfos (List[AliasInfoType]): A list of aliasInfo
+    """
     idx = startIdx
     numLines = len(lines)
     aliasInfos = []
@@ -75,13 +126,22 @@ def processAliasLines(lines, startIdx, indent, level=0):
             elif curIndent == indent * 2 * (level + 1): # subaliases
                 idx, subAliasInfos = processAliasLines(lines, idx, indent=indent, level=level+1)
                 aliasInfo[2]['sub-aliases'] = subAliasInfos
-            else:
-                raise Exception('post-alias state without alias state')
         idx += 1
     # do some checking if it is fine
     return idx, aliasInfos
 
-def findAtrribute(attr, txt):
+def findAtrribute(attr: str, txt: str) -> Optional[str]:
+    """If a string 'txt' is of the format 'attr: val' with liberal use of whitespaces around the colon, 
+        returns the value 'val' for the attribute 'attr'.
+        Note that it searches for a specific attribute.
+
+    Args:
+        attr (str): Attribute
+        txt ([type]): Text in the format 'attribute: value'
+
+    Returns:
+        The value of the attribute, if present, else None
+    """
     if mo:=re.search(r'^%s\s*:\s*(.*)' % attr, txt):
         return mo.group(1)
     return None
@@ -151,7 +211,7 @@ def vyProcessVyAliasConfig(configFilePath):
     indent = None
     envVarInfos = []
     while idx < numLines:
-        idx = getNextNonBlankLineIdx(lines, idx)
+        idx = getFirstNonBlankLineIdx(lines, idx)
         line = lines[idx].rstrip()
         vyd.print5(line)
         if line != line.strip():
