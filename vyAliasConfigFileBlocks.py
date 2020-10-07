@@ -3,9 +3,16 @@ from vyConfigFileParser import VyConfigFileBlock
 class VyAliasesBlock(VyConfigFileBlock):
     pass
 
+"""
+    Aliases
+    indent-0: aliases
+        indent-1: commands, labels, help-snippets
+                - no-attribute lines append to 'commands'
+            indent-2: subblocks
+"""
 VyAliasesBlock.indentLevelMarkers = {
-        0: { None                               : { 'target': 'aliases', } },
-        1: { None                               : { 'target': 'commands', 'mode': 'append',},
+        0: { (None, '.*')                       : { 'target': 'aliases', } },
+        1: { (None, '.*')                       : { 'target': 'commands', 'mode': 'append',},
              ('(label|snippet)','.*')           : {},},
         2:   [VyAliasesBlock, ],
 }
@@ -18,7 +25,7 @@ class VyAliasConfigBlock(VyConfigFileBlock):
 
 class VyAliasEnvVarBlock(VyConfigFileBlock):
     indentLevelMarkers = {
-        0: { None                               : { 'target': 'envVar',} },
+        0: { (None, '.*')                       : { 'target': 'envVar',} },
         1: { ('(default|[tT]arget)', '.*')      : {}, }
     }
 

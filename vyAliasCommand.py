@@ -51,13 +51,10 @@ class VyAliasCommand():
         for cmd in self.final.commands:
             startIdx = len(self.final.primaryAlias.split())
             pattern = r'(<[a-zA-Z0-9/-]+?>|\[[a-zA-Z0-9/-]+?\]|\.\.\.)'
-            #moi = re.finditer(pattern, cmd)
             spans = [_.span() for _ in re.finditer(pattern, cmd)]
             spanIdxs = [_ for _ in enumerate(spans)]
             matchStrs = re.findall(pattern, cmd) # or [_.group(0) for _ in re.finditer(pattern, cmd)]
             for idx, span in spanIdxs[::-1]:
-                #span = mo.span()
-                #matchStr = mo.group()
                 matchStr = matchStrs[idx]
                 if matchStr == '...':
                     assert(idx == len(spans) - 1)
