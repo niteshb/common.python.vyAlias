@@ -1,4 +1,4 @@
-from vyAliasBatchScriptGenerator import vyAliasBatchScriptGenerator
+from vyAlias import vyAliasBatchScriptGenerator
 import argparse
 
 parser = argparse.ArgumentParser(description='Generate an alias Windows batch file')

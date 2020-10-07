@@ -1,7 +1,7 @@
 import os
 from vyImport import vyLoadModuleFromFilePath
-from .vyProcessVyAliasConfig import vyProcessVyAliasConfig
 from .vyAliasCommand import VyAliasCommand, VyAliasCommandsTree
+from .vyAliasConfigFile import VyAliasConfigFile
 
 class VyCOIdx():
     Switcher = 0
@@ -11,7 +11,8 @@ class VyCOIdx():
 def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName=None):
     ext = os.path.splitext(configFilePath)[1]
     if ext == '.vyalias':
-        aliasInfos, envVarInfos = vyProcessVyAliasConfig(configFilePath)
+        acf = VyAliasConfigFile(configFilePath)
+        aliasInfos, envVarInfos = acf.parse()
     elif ext == '.py':
         config = vyLoadModuleFromFilePath(configFilePath)
         aliasInfos, envVarInfos = config.aliasInfos, config.envVarInfos
