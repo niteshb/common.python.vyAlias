@@ -1,3 +1,8 @@
+"""
+This is the interface between vyConfigFileParser package and this (vyAlias) package.
+This defines the different kind of blocks in an .alias file
+"""
+
 from vyConfigFileParser import VyConfigFileBlock
 
 class VyAliasesBlock(VyConfigFileBlock):
@@ -11,9 +16,10 @@ class VyAliasesBlock(VyConfigFileBlock):
             indent-2: subblocks
 """
 VyAliasesBlock.indentLevelMarkers = {
-        0: { (None, '.*')                       : { 'target': 'aliases', } },
+        0: { (None, '([^&|])*')                 : { 'target': 'aliases', } },
         1: { (None, '.*')                       : { 'target': 'commands', 'mode': 'append',},
-             ('(label|snippet)','.*')           : {},},
+             ('label', r'[a-zA-Z0-9_]*')        : {},
+             ('snippet', '.*')                  : {},},
         2:   [VyAliasesBlock, ],
 }
 
