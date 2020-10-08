@@ -16,17 +16,17 @@ class VyAliasesBlock(VyConfigFileBlock):
             indent-2: subblocks
 """
 VyAliasesBlock.indentLevelMarkers = {
-        0: { (None, '([^&|])*')                 : { 'target': 'aliases', } },
-        1: { (None, '.*')                       : { 'target': 'commands', 'mode': 'append',},
-             ('label', r'([a-zA-Z0-9_]*|--vyabsg-null-label--)')        : {},
-             ('snippet', '.*')                  : {},},
+        0: { (None, '([^&|])*')                                 : { 'target': 'aliases', } },
+        1: { (None, '.*')                                       : { 'target': 'commands', 'mode': 'append',},
+             ('label', r'([a-zA-Z0-9_]*|--vyabsg-null-label--)'): {},
+             ('snippet', '.*')                                  : {},},
         2:   [VyAliasesBlock, ],
 }
 
 class VyAliasConfigBlock(VyConfigFileBlock):
     indentLevelMarkers = {
         0: { ('vyalias', 'config')              : { 'target': None },},
-        1: { ('.*', '.*')                       : {},}
+        1: { ('label-source', '(alias|command)'): {},}
     }
 
 class VyAliasEnvVarBlock(VyConfigFileBlock):
@@ -37,7 +37,7 @@ class VyAliasEnvVarBlock(VyConfigFileBlock):
 
 class VyAliasEnvVarHeaderBlock(VyConfigFileBlock):
     indentLevelMarkers = {
-        0: { ('vyalias', 'envvar')               : { 'target': None },},
+        0: { ('vyalias', 'envvar')              : { 'target': None },},
         1:   [VyAliasEnvVarBlock,],
     }
 

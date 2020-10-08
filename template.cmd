@@ -31,7 +31,7 @@ echo Invalid command. Type '%0 h' to get help
 GOTO label_exit
 
 ##############################################################
-:{{labelHelp}}
+:label_{{labelHelp}}
 @echo on
 @echo Command Options:
 {{cmd[{VyCOIdx.HelpSnippets}]}}@echo.

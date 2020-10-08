@@ -4,11 +4,12 @@ class Generic():
     pass
 
 class VyAliasCommandsTree():
-    def __init__(self, aliasInfos):
+    def __init__(self, aliasInfos, **config):
         assert(len(aliasInfos) == 1)
         aliasInfo = aliasInfos[0]
         assert('sub-aliases' in aliasInfo[2])
-        self.root = VyAliasCommand(*aliasInfo)
+        labelSource = config['label-source'] if 'label-source' in config else 'alias'
+        self.root = VyAliasCommand(*aliasInfo, labelSource=labelSource)
     
     def traverse(self):
         return self.root.traverse()
@@ -26,7 +27,7 @@ class VyAliasCommand():
             aliasDict, 
             level=0, 
             parent=None,
-            labelSource='command',
+            labelSource='alias',
             prefix=rootPrefix
         ):
         self.aliases = aliases
@@ -109,7 +110,7 @@ class VyAliasCommand():
             subPrefix.label = self.final.label
 
             ac = VyAliasCommand(*aliasInfo, level=level+1, parent=self, 
-                prefix=subPrefix)
+                prefix=subPrefix, labelSource=labelSource)
             self.subAliases.append(ac)
 
     def __getattr__(self, attr):

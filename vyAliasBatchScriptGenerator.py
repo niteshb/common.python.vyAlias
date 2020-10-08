@@ -12,10 +12,10 @@ def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName
     ext = os.path.splitext(configFilePath)[1]
     if ext == '.vyalias':
         acf = VyAliasConfigFile(configFilePath)
-        aliasInfos, envVarInfos = acf.parse()
+        aliasInfos, envVarInfos, configInfos = acf.parse()
     elif ext == '.py':
         config = vyLoadModuleFromFilePath(configFilePath)
-        aliasInfos, envVarInfos = config.aliasInfos, config.envVarInfos
+        aliasInfos, envVarInfos, configInfos = config.aliasInfos, config.envVarInfos, config.configInfos
 
     cmdTemplates = None
     envVarTemplates = None
@@ -24,7 +24,7 @@ def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName
     cmdTemplates = subTemplates.cmdTemplates
     envVarTemplates = subTemplates.envVarTemplates
 
-    tree = VyAliasCommandsTree(aliasInfos)
+    tree = VyAliasCommandsTree(aliasInfos, **configInfos)
     tree.root.final.label = 'Switcher'
 
     envVarOutputs = [''] * len(envVarTemplates)
@@ -79,7 +79,8 @@ def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName
     # procesing done
     gTemplate = open(os.path.join(moduleFolder, 'template.cmd')).read()
     gTemplate = gTemplate.format(VyCOIdx=VyCOIdx)
-    out = gTemplate.format(ev=envVarOutputs, cmd=cmdOutputs, labelHelp='label_help')
+    labelHelp = tree.root.subAliases[0].final.label # help is inserted in the beginning
+    out = gTemplate.format(ev=envVarOutputs, cmd=cmdOutputs, labelHelp=labelHelp)
     if not outputFileName:
         outputFileName = f'{tree.root.aliases[0]}.cmd'
     outputFilePath = os.path.join(outputFolder, outputFileName)
