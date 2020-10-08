@@ -19,14 +19,16 @@ class VyAliasConfigFile(VyConfigFile):
         envVarInfos = []
         for subblock in parsed.subblocks:
             if isinstance(subblock, VyAliasesBlock):
-                aliasInfos = self.processAliasBlock(subblock) # TODO: check, should come here only once
+                aliasInfos = [self.processAliasBlock(subblock)] # TODO: check, should come here only once
+                helpAliasInfo = (['h', '', '-h', '--help'], [], {'label': 'help', 'snippet': 'This help message'})
+                aliasInfos[0][2]['sub-aliases'].insert(0, helpAliasInfo)
             elif isinstance(subblock, VyAliasEnvVarHeaderBlock):
                 envVarInfos = self.processEnvVarBlock(subblock)
             elif isinstance(subblock, VyAliasConfigBlock):
                 pass
             else:
                 raise Exception('Unexpected return from VyConfigFile.parse')
-        return [aliasInfos], envVarInfos
+        return aliasInfos, envVarInfos
 
     def processEnvVarBlock(self, block):
         envVarInfos = []
@@ -49,11 +51,12 @@ class VyAliasConfigFile(VyConfigFile):
             aliasInfo[2]['label'] = val
         if 'snippet' in block.attribs:
             aliasInfo[2]['snippet'] = block.attribs['snippet']
-        for cmd in block.attribs['commands']:
-            if cmd != '--vyabsg-no-command--':
-                if cmd == '--vyabsg-empty-command-suffix--':
-                    cmd = ''
-                aliasInfo[1].append(cmd)
+        if 'commands' in block.attribs:
+            for cmd in block.attribs['commands']:
+                if cmd != '--vyabsg-no-command--':
+                    if cmd == '--vyabsg-empty-command-suffix--':
+                        cmd = ''
+                    aliasInfo[1].append(cmd)
         if block.subblocks:
             aliasInfo[2]['sub-aliases'] = []
         for subblock in block.subblocks:

@@ -79,7 +79,7 @@ def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName
     # procesing done
     gTemplate = open(os.path.join(moduleFolder, 'template.cmd')).read()
     gTemplate = gTemplate.format(VyCOIdx=VyCOIdx)
-    out = gTemplate.format(ev=envVarOutputs, cmd=cmdOutputs)
+    out = gTemplate.format(ev=envVarOutputs, cmd=cmdOutputs, labelHelp='label_help')
     if not outputFileName:
         outputFileName = f'{tree.root.aliases[0]}.cmd'
     outputFilePath = os.path.join(outputFolder, outputFileName)

@@ -14,7 +14,12 @@
 		},
 		{
 			"path": "../vyConfigFileParser"
+		},
+		{
+			"path": "../../misc/vyConda"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"python.pythonPath": "tests\\.venv\\Scripts\\python.exe"
+	}
 }

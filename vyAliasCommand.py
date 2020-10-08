@@ -19,9 +19,16 @@ rootPrefix.alias = ''
 rootPrefix.label = ''
 
 class VyAliasCommand():
-    def __init__(self, aliases, commands, aliasDict, 
-        level=0, parent=None,
-        prefix=rootPrefix):
+    def __init__(
+            self, 
+            aliases, 
+            commands, 
+            aliasDict, 
+            level=0, 
+            parent=None,
+            labelSource='command',
+            prefix=rootPrefix
+        ):
         self.aliases = aliases
         self.commands = commands
         self.aliasDict = aliasDict
@@ -33,8 +40,14 @@ class VyAliasCommand():
         keys = aliasDict.keys()
 
         self.primaryAlias = aliases[0]
-        self.verb = commands[0].split(' ')[0] if len(commands) else None
-        self.label = aliasDict['label'] if 'label' in keys else self.verb
+        self.label = aliasDict['label'] if 'label' in keys else None
+        if self.label is None:
+            if labelSource == 'command':
+                self.verb = commands[0].split(' ')[0] if len(commands) else None
+                self.label = aliasDict['label'] if 'label' in keys else self.verb
+            else:
+                self.label = self.primaryAlias
+
         self.final = Generic()
         self.final.primaryAlias = ' '.join([self.prefix.alias, self.primaryAlias]).strip(' ')
         self.final.label = '_'.join([self.prefix.label, self.label]).strip('_')
