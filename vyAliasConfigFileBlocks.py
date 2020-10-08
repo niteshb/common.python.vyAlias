@@ -18,7 +18,7 @@ class VyAliasesBlock(VyConfigFileBlock):
 VyAliasesBlock.indentLevelMarkers = {
         0: { (None, '([^&|])*')                 : { 'target': 'aliases', } },
         1: { (None, '.*')                       : { 'target': 'commands', 'mode': 'append',},
-             ('label', r'[a-zA-Z0-9_]*')        : {},
+             ('label', r'([a-zA-Z0-9_]*|--vyabsg-null-label--)')        : {},
              ('snippet', '.*')                  : {},},
         2:   [VyAliasesBlock, ],
 }
