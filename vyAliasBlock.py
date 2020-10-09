@@ -3,6 +3,10 @@ from vyConfigFileParser import VyConfigFileBlock
 
 class Generic():
     pass
+rootPrefix = Generic()
+rootPrefix.command = ''
+rootPrefix.alias = ''
+rootPrefix.label = ''
 
 class VyAliasBlock(VyConfigFileBlock):
     def process(self, prefix, labelSource):

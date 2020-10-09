@@ -1,24 +1,27 @@
 import os
 from jinja2 import Template
-from .vyAliasTree import VyAliasTree
 from .vyAliasConfigFile import VyAliasConfigFile
-
-class VyCOIdx():
-    Switcher = 0
-    HelpSnippets = 1
-    Commands = 2
+from .vyAliasBlock import rootPrefix
 
 def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName=None):
     acf = VyAliasConfigFile(configFilePath)
     aliasRootBlock, envVarInfos, configInfos = acf.parse()
-    tree = VyAliasTree(aliasRootBlock, **configInfos)
-    tree.root.final.label = 'Switcher'
 
-    aliasQueue = [_ for _ in tree.root.subAliasBlocks]
+    if 'label-source' in configInfos:
+        if configInfos['label-source'] not in ['alias', 'command']:
+            raise Exception('Invalid label source')
+    else:
+        configInfos['label-source'] = 'alias'
+
+    aliasRootBlock.process(rootPrefix, configInfos['label-source'])
+    assert(aliasRootBlock.hasChildren)
+    aliasRootBlock.final.label = 'Switcher'
+
+    aliasQueue = [_ for _ in aliasRootBlock.subAliasBlocks]
     for aliasObj in aliasQueue:
         if aliasObj.hasChildren:
             aliasQueue += [_ for _ in aliasObj.subAliasBlocks]
-    labelHelp = tree.root.subAliasBlocks[0].final.label # help is inserted in the beginning
+    labelHelp = aliasRootBlock.subAliasBlocks[0].final.label # help is inserted in the beginning
     for envVarInfo in envVarInfos:
         envVarInfo['target'] = envVarInfo['target'] if 'target' in envVarInfo else envVarInfo['envVar'].lower()
         envVarInfo['Target'] = envVarInfo['Target'] if 'Target' in envVarInfo else envVarInfo['target'][0].upper() + envVarInfo['target'][1:]
@@ -26,10 +29,10 @@ def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName
     # Jinja Starts Here
     moduleFolder = os.path.dirname(os.path.realpath(__file__))
     template = Template(open(os.path.join(moduleFolder, 'template.jinja.cmd')).read())
-    out = template.render(labelHelp=labelHelp, envvars=envVarInfos, tree=tree, aliasQueue=aliasQueue)
+    out = template.render(labelHelp=labelHelp, envvars=envVarInfos, aliasRootBlock=aliasRootBlock, aliasQueue=aliasQueue)
 
     if not outputFileName:
-        outputFileName = f'{tree.root.aliases[0]}.cmd'
+        outputFileName = f'{aliasRootBlock.aliases[0]}.cmd'
     outputFilePath = os.path.join(outputFolder, outputFileName)
     print('Output File Path:', outputFilePath)
     with open(outputFilePath, 'w') as ofid:

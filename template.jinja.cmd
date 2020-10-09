@@ -38,13 +38,13 @@ GOTO label_exit
 ##############################################################
 :label_{{ labelHelp }}
 @echo on
-@echo Command Options:{% for aliasObj in tree.root.traverse() %}{% if aliasObj.traversalState == 'pre' and not aliasObj.hasChildren %}
+@echo Command Options:{% for aliasObj in aliasRootBlock.traverse() %}{% if aliasObj.traversalState == 'pre' and not aliasObj.hasChildren %}
 @echo   {{ '{0:<11}'.format(aliasObj.final.primaryAlias) }}   : {{ aliasObj.final.snippet }}{% endif %}{% endfor %}
 @echo.{% for envvar in envvars %}
 @echo Set environment variable 'VY_GIT_CMD_{{ envvar["envVar"] }}' to set {{ envvar["target"] }}. default='{{ envvar["default"] }}', current='%VY_GIT_CMD_{{ envvar["envVar"] }}%'{% endfor %}
 @echo off
 GOTO label_exit
-{% for aliasObj in tree.root.traverse() %}{% if aliasObj.traversalState == 'pre' and not aliasObj.hasChildren and (aliasObj.commands)|length > 0 %}
+{% for aliasObj in aliasRootBlock.traverse() %}{% if aliasObj.traversalState == 'pre' and not aliasObj.hasChildren and (aliasObj.commands)|length > 0 %}
 ##############################################################
 :label_{{ aliasObj.final.label }}
 @echo on
