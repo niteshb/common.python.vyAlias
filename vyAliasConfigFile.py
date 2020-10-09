@@ -16,7 +16,7 @@ class VyAliasConfigFile(VyConfigFile):
 
     def parse(self):
         parsed = super().parse(VyAliasConfigFileBlock)
-        envVarInfos = []
+        envVarInfos = {}
         configInfos = {}
         for subblock in parsed.subblocks:
             if isinstance(subblock, VyAliasesBlock):
@@ -29,21 +29,12 @@ class VyAliasConfigFile(VyConfigFile):
                 }
                 aliasInfoRoot['sub-aliases'].insert(0, helpAliasInfo)
             elif isinstance(subblock, VyAliasEnvVarHeaderBlock):
-                envVarInfos = self.processEnvVarBlock(subblock)
+                envVarInfos = subblock.subblocks
             elif isinstance(subblock, VyAliasConfigBlock):
                 configInfos = subblock.attribs
             else:
                 raise Exception('Unexpected return from VyConfigFile.parse')
         return aliasInfoRoot, envVarInfos, configInfos
-
-    def processEnvVarBlock(self, block):
-        envVarInfos = []
-        for subblock in block.subblocks:
-            d = subblock.attribs
-            envVarInfo = (d['envVar'], d)
-            del envVarInfo[1]['envVar']
-            envVarInfos.append(envVarInfo)
-        return envVarInfos
 
     def processAliasBlock(self, block):
         aliasInfo = block.attribs

@@ -60,10 +60,10 @@ def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName
                 )
 
     for envVarInfo in envVarInfos:
-        suffix = envVarInfo[0]
-        default = envVarInfo[1]['default']
-        target = envVarInfo[1]['target'] if 'target' in envVarInfo[1] else suffix.lower()
-        Target = envVarInfo[1]['Target'] if 'Target' in envVarInfo[1] else target[0].upper() + target[1:]
+        suffix = envVarInfo['envVar']
+        default = envVarInfo['default']
+        target = envVarInfo['target'] if 'target' in envVarInfo else suffix.lower()
+        Target = envVarInfo['Target'] if 'Target' in envVarInfo else target[0].upper() + target[1:]
         for idx, envVarTemplate in enumerate(envVarTemplates):
             envVarOutputs[idx] += envVarTemplate.format(
                 suffix=suffix,
