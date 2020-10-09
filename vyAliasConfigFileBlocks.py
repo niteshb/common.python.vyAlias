@@ -4,10 +4,7 @@ This defines the different kind of blocks in an .alias file
 """
 
 from vyConfigFileParser import VyConfigFileBlock
-
-class VyAliasesBlock(VyConfigFileBlock):
-    pass
-
+from . import VyAliasBlock
 """
     Aliases
     indent-0: aliases
@@ -15,12 +12,12 @@ class VyAliasesBlock(VyConfigFileBlock):
                 - no-attribute lines append to 'commands'
             indent-2: subblocks
 """
-VyAliasesBlock.indentLevelMarkers = {
+VyAliasBlock.indentLevelMarkers = {
         0: { (None, '([^&|])*')                                 : { 'target': 'aliases', } },
         1: { (None, '.*')                                       : { 'target': 'commands', 'mode': 'append',},
              ('label', r'([a-zA-Z0-9_]*|--vyabsg-null-label--)'): {},
              ('snippet', '.*')                                  : {},},
-        2:   [VyAliasesBlock, ],
+        2:   [VyAliasBlock, ],
 }
 
 class VyAliasConfigBlock(VyConfigFileBlock):
@@ -43,5 +40,5 @@ class VyAliasEnvVarHeaderBlock(VyConfigFileBlock):
 
 class VyAliasConfigFileBlock(VyConfigFileBlock):
     indentLevelMarkers = {
-        0:   [VyAliasesBlock, VyAliasEnvVarHeaderBlock, VyAliasConfigBlock],
+        0:   [VyAliasBlock, VyAliasEnvVarHeaderBlock, VyAliasConfigBlock],
     }

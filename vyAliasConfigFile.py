@@ -3,7 +3,8 @@ from pprint import pprint
 from typing import List, Union, Tuple, Dict, Callable, Any, Optional
 from vyConfigFileParser import VyConfigFile
 from vyDebug import VyDebug, VyDebugLevel
-from .vyAliasConfigFileBlocks import VyAliasConfigFileBlock, VyAliasesBlock
+from . import VyAliasBlock
+from .vyAliasConfigFileBlocks import VyAliasConfigFileBlock
 from .vyAliasConfigFileBlocks import VyAliasEnvVarHeaderBlock, VyAliasConfigBlock
 
 AliasInfoType = Tuple[List[str], List[str], Dict[str, str]]
@@ -19,29 +20,20 @@ class VyAliasConfigFile(VyConfigFile):
         envVarInfos = {}
         configInfos = {}
         for subblock in parsed.subblocks:
-            if isinstance(subblock, VyAliasesBlock):
-                aliasInfoRoot = self.processAliasBlock(subblock) # TODO: check, should come here only once
-                helpAliasInfo = {
+            if isinstance(subblock, VyAliasBlock):
+                # TODO: check, should come here only once
+                helpAliasBlock = VyAliasBlock()
+                helpAliasBlock.attribs = {
                     'aliases'   : 'h, --vyabsg-null-alias--, -h, --help', 
-                    'commands'  : [], 
                     'label'     : 'help', 
                     'snippet'   : 'This help message',
                 }
-                aliasInfoRoot['sub-aliases'].insert(0, helpAliasInfo)
+                subblock.subblocks.insert(0, helpAliasBlock)
+                aliasBlock = subblock
             elif isinstance(subblock, VyAliasEnvVarHeaderBlock):
                 envVarInfos = subblock.subblocks
             elif isinstance(subblock, VyAliasConfigBlock):
                 configInfos = subblock.attribs
             else:
                 raise Exception('Unexpected return from VyConfigFile.parse')
-        return aliasInfoRoot, envVarInfos, configInfos
-
-    def processAliasBlock(self, block):
-        aliasInfo = block.attribs
-
-        if block.subblocks:
-            aliasInfo['sub-aliases'] = []
-        for subblock in block.subblocks:
-            subAliasInfo = self.processAliasBlock(subblock)
-            aliasInfo['sub-aliases'].append(subAliasInfo)
-        return aliasInfo
+        return aliasBlock, envVarInfos, configInfos

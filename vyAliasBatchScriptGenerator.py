@@ -1,6 +1,7 @@
 import os
 from vyImport import vyLoadModuleFromFilePath
-from .vyAliasCommand import VyAliasCommand, VyAliasCommandsTree
+from .vyAliasBlock import VyAliasBlock
+from .vyAliasTree import VyAliasTree
 from .vyAliasConfigFile import VyAliasConfigFile
 
 class VyCOIdx():
@@ -10,7 +11,7 @@ class VyCOIdx():
 
 def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName=None):
     acf = VyAliasConfigFile(configFilePath)
-    aliasInfoRoot, envVarInfos, configInfos = acf.parse()
+    aliasBlock, envVarInfos, configInfos = acf.parse()
 
     cmdTemplates = None
     envVarTemplates = None
@@ -19,13 +20,13 @@ def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName
     cmdTemplates = subTemplates.cmdTemplates
     envVarTemplates = subTemplates.envVarTemplates
 
-    tree = VyAliasCommandsTree(aliasInfoRoot, **configInfos)
+    tree = VyAliasTree(aliasBlock, **configInfos)
     tree.root.final.label = 'Switcher'
 
     envVarOutputs = [''] * len(envVarTemplates)
     cmdOutputs = [''] * len(cmdTemplates) + [''] + ['']
 
-    aliasQueue = [_ for _ in tree.root.subAliases]
+    aliasQueue = [_ for _ in tree.root.subAliasBlocks]
     for aliasObj in aliasQueue:
         if aliasObj.firstchild:
             cmdOutputs[VyCOIdx.Switcher] += cmdTemplates[3].format(
@@ -43,7 +44,7 @@ def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName
             cmdOutputs[VyCOIdx.Switcher] += f'GOTO label_invalid & REM ({aliasObj.parent.final.label}) <- ({aliasObj.final.label})\n'
 
         if aliasObj.hasChildren:
-            aliasQueue += [_ for _ in aliasObj.subAliases]
+            aliasQueue += [_ for _ in aliasObj.subAliasBlocks]
 
     for aliasObj in tree.root.traverse():
         if aliasObj.traversalState == 'post':
@@ -74,7 +75,7 @@ def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName
     # procesing done
     gTemplate = open(os.path.join(moduleFolder, 'template.cmd')).read()
     gTemplate = gTemplate.format(VyCOIdx=VyCOIdx)
-    labelHelp = tree.root.subAliases[0].final.label # help is inserted in the beginning
+    labelHelp = tree.root.subAliasBlocks[0].final.label # help is inserted in the beginning
     out = gTemplate.format(ev=envVarOutputs, cmd=cmdOutputs, labelHelp=labelHelp)
     if not outputFileName:
         outputFileName = f'{tree.root.aliases[0]}.cmd'

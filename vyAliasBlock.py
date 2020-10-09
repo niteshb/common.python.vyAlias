@@ -1,48 +1,25 @@
 import re
+from vyConfigFileParser import VyConfigFileBlock
 
 class Generic():
     pass
 
-rootPrefix = Generic()
-rootPrefix.command = ''
-rootPrefix.alias = ''
-rootPrefix.label = ''
+class VyAliasBlock(VyConfigFileBlock):
+    def __init__(self):
+        super().__init__()
 
-class VyAliasCommandsTree():
-    def __init__(self, aliasInfoRoot, **config):
-        if 'label-source' in config:
-            if config['label-source'] in ['alias', 'command']:
-                labelSource = config['label-source']
-            else:
-                raise Exception('Invalid label source')
-        else:
-            labelSource = 'alias'
-        self.root = VyAliasCommand(aliasInfoRoot, rootPrefix, labelSource)
-        assert(self.root.hasChildren)
-
-    def traverse(self):
-        return self.root.traverse()
-
-class VyAliasCommand():
-    def __init__(
-            self, 
-            aliasInfo, 
-            prefix,
-            labelSource,
-            level=0, 
-            parent=None,
-        ):
-        self.aliasInfo = aliasInfo
+    def process(self, prefix, labelSource, level=0, parent=None):
         self.prefix = prefix
         self.level = level
         self.parent = parent
-        self.subAliases = []
-        self.hasChildren = 'sub-aliases' in aliasInfo
+
+        attribs = self.attribs
+        self.hasChildren = bool(len(self.subblocks))
 
         self.aliases = ['' if alias.strip().lower() == '--vyabsg-null-alias--' else alias.strip() for alias in self.aliases.split(',')]
         self.primaryAlias = self.aliases[0]
 
-        rawCommands = aliasInfo['commands'] if 'commands' in aliasInfo else []
+        rawCommands = attribs['commands'] if 'commands' in attribs else []
         self.commands = []
         for cmd in rawCommands:
             if cmd != '--vyabsg-no-command--':
@@ -50,7 +27,7 @@ class VyAliasCommand():
                     cmd = ''
                 self.commands.append(cmd)
 
-        if 'label' in aliasInfo:
+        if 'label' in attribs:
             if self.label.lower() == '--vyabsg-null-label--':
                 self.label = ''
         else:
@@ -92,8 +69,8 @@ class VyAliasCommand():
             self.final.execCommands.append(cmd)
         self.commandsStr = '\n'.join(self.final.execCommands)
 
-        if 'snippet' in aliasInfo:
-            snippet = aliasInfo['snippet']
+        if 'snippet' in attribs:
+            snippet = attribs['snippet']
             if snippet[:3] == '<= ':
                 self.command_snippet = []
                 snippet = snippet[3:]
@@ -106,7 +83,7 @@ class VyAliasCommand():
         if not self.hasChildren:
             return
         assert(len(self.commands) <= 1)
-        for subAliasInfo in aliasInfo['sub-aliases']:
+        for subAliasBlock in self.subAliasBlocks:
             thisPrefix = Generic()
             thisPrefix.command = self.commands[0] if len(self.commands) else ''
             thisPrefix.alias = self.aliases[0]
@@ -117,40 +94,40 @@ class VyAliasCommand():
             subPrefix.alias = self.final.primaryAlias
             subPrefix.label = self.final.label
 
-            ac = VyAliasCommand(subAliasInfo, level=level+1, parent=self, 
+            subAliasBlock.process(level=level+1, parent=self, 
                 prefix=subPrefix, labelSource=labelSource)
-            self.subAliases.append(ac)
 
     def __setattr__(self, attr, value):
         if attr in ['label']:
-            self.aliasInfo[attr] = value
+            self.attribs[attr] = value
         else:
             super().__setattr__(attr, value)
 
     def __getattr__(self, attr):
-        if attr == 'firstchild':
+        if attr == 'subAliasBlocks':
+            return self.subblocks
+        elif attr == 'firstchild':
             if self.parent == None:
                 return True
-            elif self.parent.subAliases[0] == self:
+            elif self.parent.subAliasBlocks[0] == self:
                 return True
             else:
                 return False
         elif attr == 'lastchild':
             if self.parent == None:
                 return True
-            elif self.parent.subAliases[-1] == self:
+            elif self.parent.subAliasBlocks[-1] == self:
                 return True
             else:
                 return False
         elif attr in ['aliases', 'commands', 'label']:
-            return self.aliasInfo[attr]
+            return self.attribs[attr]
 
     def traverse(self):
         self.traversalState = 'pre'
         yield self
-        for subAlias in self.subAliases:
-            for _ in subAlias.traverse():
+        for subAliasBlock in self.subAliasBlocks:
+            for _ in subAliasBlock.traverse():
                 yield _
         self.traversalState = 'post'
         yield self
-
