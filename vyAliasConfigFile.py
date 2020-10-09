@@ -19,8 +19,8 @@ class VyAliasConfigFile(VyConfigFile):
         parsed = super().parse(VyAliasConfigFileBlock)
         envVarInfos = {}
         configInfos = {}
-        for subblock in parsed.subblocks:
-            if isinstance(subblock, VyAliasBlock):
+        for subBlock in parsed.subBlocks:
+            if isinstance(subBlock, VyAliasBlock):
                 # TODO: check, should come here only once
                 helpAliasBlock = VyAliasBlock()
                 helpAliasBlock.attribs = {
@@ -28,12 +28,12 @@ class VyAliasConfigFile(VyConfigFile):
                     'label'     : 'help', 
                     'snippet'   : 'This help message',
                 }
-                subblock.subblocks.insert(0, helpAliasBlock)
-                aliasBlock = subblock
-            elif isinstance(subblock, VyAliasEnvVarHeaderBlock):
-                envVarInfos = subblock.subblocks
-            elif isinstance(subblock, VyAliasConfigBlock):
-                configInfos = subblock.attribs
+                subBlock.subBlocks.insert(0, helpAliasBlock)
+                aliasBlock = subBlock
+            elif isinstance(subBlock, VyAliasEnvVarHeaderBlock):
+                envVarInfos = subBlock.subBlocks
+            elif isinstance(subBlock, VyAliasConfigBlock):
+                configInfos = subBlock.attribs
             else:
                 raise Exception('Unexpected return from VyConfigFile.parse')
         return aliasBlock, envVarInfos, configInfos

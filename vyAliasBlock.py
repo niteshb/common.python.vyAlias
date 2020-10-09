@@ -14,7 +14,7 @@ class VyAliasBlock(VyConfigFileBlock):
         self.parent = parent
 
         attribs = self.attribs
-        self.hasChildren = bool(len(self.subblocks))
+        self.hasChildren = bool(len(self.subAliasBlocks))
 
         self.aliases = ['' if alias.strip().lower() == '--vyabsg-null-alias--' else alias.strip() for alias in self.aliases.split(',')]
         self.primaryAlias = self.aliases[0]
@@ -105,7 +105,7 @@ class VyAliasBlock(VyConfigFileBlock):
 
     def __getattr__(self, attr):
         if attr == 'subAliasBlocks':
-            return self.subblocks
+            return self.subBlocks
         elif attr == 'firstchild':
             if self.parent == None:
                 return True

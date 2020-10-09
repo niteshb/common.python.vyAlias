@@ -10,7 +10,7 @@ from . import VyAliasBlock
     indent-0: aliases
         indent-1: commands, labels, help-snippets
                 - no-attribute lines append to 'commands'
-            indent-2: subblocks
+            indent-2: subAliasBlocks
 """
 VyAliasBlock.indentLevelMarkers = {
         0: { (None, '([^&|])*')                                 : { 'target': 'aliases', } },
