@@ -4,9 +4,7 @@
 
 ### Code
 
-* config: auto-help
-* config: labels from aliases rather from commands
-* hide __labels in help
+* jinja templating
 * solve make make issue
 * typing: all around
 * typing: NewType
@@ -31,6 +29,10 @@
 ## Done
 
 ### Code
+
+* config: auto-help
+* config: labels from aliases rather from commands
+* hide __labels in help
 
 ### Testing
 

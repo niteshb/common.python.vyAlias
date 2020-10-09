@@ -1,3 +1,3 @@
-# common.python.vyShellScriptGenerator
+# vyAlias: Alias Command Generator
 
-common python vyShellScriptGenerator
+A versatile alias command generator

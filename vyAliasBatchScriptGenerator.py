@@ -9,13 +9,8 @@ class VyCOIdx():
     Commands = 2
 
 def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName=None):
-    ext = os.path.splitext(configFilePath)[1]
-    if ext == '.vyalias':
-        acf = VyAliasConfigFile(configFilePath)
-        aliasInfos, envVarInfos, configInfos = acf.parse()
-    elif ext == '.py':
-        config = vyLoadModuleFromFilePath(configFilePath)
-        aliasInfos, envVarInfos, configInfos = config.aliasInfos, config.envVarInfos, config.configInfos
+    acf = VyAliasConfigFile(configFilePath)
+    aliasInfos, envVarInfos, configInfos = acf.parse()
 
     cmdTemplates = None
     envVarTemplates = None
