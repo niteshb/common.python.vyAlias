@@ -106,28 +106,6 @@ class VyAliasBlock(VyConfigFileBlock):
     def __getattr__(self, attr):
         if attr == 'subAliasBlocks':
             return self.subBlocks
-        elif attr == 'firstchild':
-            if self.parent == None:
-                return True
-            elif self.parent.subAliasBlocks[0] == self:
-                return True
-            else:
-                return False
-        elif attr == 'lastchild':
-            if self.parent == None:
-                return True
-            elif self.parent.subAliasBlocks[-1] == self:
-                return True
-            else:
-                return False
         elif attr in ['aliases', 'commands', 'label']:
             return self.attribs[attr]
-
-    def traverse(self):
-        self.traversalState = 'pre'
-        yield self
-        for subAliasBlock in self.subAliasBlocks:
-            for _ in subAliasBlock.traverse():
-                yield _
-        self.traversalState = 'post'
-        yield self
+        return super().__getattr__(attr)
