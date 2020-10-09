@@ -3,45 +3,61 @@ import re
 class Generic():
     pass
 
-class VyAliasCommandsTree():
-    def __init__(self, aliasInfoRoot, **config):
-        assert('sub-aliases' in aliasInfoRoot)
-        labelSource = config['label-source'] if 'label-source' in config else 'alias'
-        self.root = VyAliasCommand(aliasInfoRoot, labelSource=labelSource)
-    
-    def traverse(self):
-        return self.root.traverse()
-
 rootPrefix = Generic()
 rootPrefix.command = ''
 rootPrefix.alias = ''
 rootPrefix.label = ''
 
+class VyAliasCommandsTree():
+    def __init__(self, aliasInfoRoot, **config):
+        if 'label-source' in config:
+            if config['label-source'] in ['alias', 'command']:
+                labelSource = config['label-source']
+            else:
+                raise Exception('Invalid label source')
+        else:
+            labelSource = 'alias'
+        self.root = VyAliasCommand(aliasInfoRoot, rootPrefix, labelSource)
+        assert(self.root.hasChildren)
+
+    def traverse(self):
+        return self.root.traverse()
+
 class VyAliasCommand():
     def __init__(
             self, 
             aliasInfo, 
+            prefix,
+            labelSource,
             level=0, 
             parent=None,
-            labelSource='alias',
-            prefix=rootPrefix
         ):
         self.aliasInfo = aliasInfo
+        self.prefix = prefix
         self.level = level
         self.parent = parent
-        self.prefix = prefix
         self.subAliases = []
-        self.hasChildren = False
+        self.hasChildren = 'sub-aliases' in aliasInfo
 
+        self.aliases = ['' if alias.strip().lower() == '--vyabsg-null-alias--' else alias.strip() for alias in self.aliases.split(',')]
         self.primaryAlias = self.aliases[0]
-        if 'label' not in aliasInfo:
+
+        rawCommands = aliasInfo['commands'] if 'commands' in aliasInfo else []
+        self.commands = []
+        for cmd in rawCommands:
+            if cmd != '--vyabsg-no-command--':
+                if cmd == '--vyabsg-empty-command-suffix--':
+                    cmd = ''
+                self.commands.append(cmd)
+
+        if 'label' in aliasInfo:
+            if self.label.lower() == '--vyabsg-null-label--':
+                self.label = ''
+        else:
             if labelSource == 'command':
-                self.verb = self.commands[0].split(' ')[0] if len(self.commands) else None
-                self.label = aliasInfo['label'] if 'label' in aliasInfo else self.verb
-            elif labelSource == 'alias':
+                self.label = self.commands[0].split(' ')[0] if len(self.commands) else ''
+            else: #  labelSource == 'alias'
                 self.label = self.primaryAlias
-            else:
-                raise Exception('Invalid label source')
 
         self.final = Generic()
         self.final.primaryAlias = ' '.join([self.prefix.alias, self.primaryAlias]).strip(' ')
@@ -87,10 +103,9 @@ class VyAliasCommand():
         self.final.snippet = ' : '.join(self.command_snippet + self.snippet)
         for char in ['<', '>', '&']: # this escaping is not perfect. "<" should not be escaped
             self.final.snippet = self.final.snippet.replace(char, '^' + char)
-        if 'sub-aliases' not in aliasInfo:
+        if not self.hasChildren:
             return
         assert(len(self.commands) <= 1)
-        self.hasChildren = True
         for subAliasInfo in aliasInfo['sub-aliases']:
             thisPrefix = Generic()
             thisPrefix.command = self.commands[0] if len(self.commands) else ''

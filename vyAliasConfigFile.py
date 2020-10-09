@@ -22,7 +22,7 @@ class VyAliasConfigFile(VyConfigFile):
             if isinstance(subblock, VyAliasesBlock):
                 aliasInfoRoot = self.processAliasBlock(subblock) # TODO: check, should come here only once
                 helpAliasInfo = {
-                    'aliases'   : ['h', '', '-h', '--help'], 
+                    'aliases'   : 'h, --vyabsg-null-alias--, -h, --help', 
                     'commands'  : [], 
                     'label'     : 'help', 
                     'snippet'   : 'This help message',
@@ -46,26 +46,8 @@ class VyAliasConfigFile(VyConfigFile):
         return envVarInfos
 
     def processAliasBlock(self, block):
-        idx = 0
-        raw_aliases = block.attribs['aliases']
-        aliases = ['' if alias.strip().lower() == '--vyabsg-null-alias--' else alias.strip() for alias in raw_aliases.split(',')]
-        aliasInfo = {
-            'aliases'   : aliases, 
-            'commands'  : [], 
-        }
-        if 'label' in block.attribs:
-            val = block.attribs['label']
-            if val.lower() == '--vyabsg-null-label--':
-                val = ''
-            aliasInfo['label'] = val
-        if 'snippet' in block.attribs:
-            aliasInfo['snippet'] = block.attribs['snippet']
-        if 'commands' in block.attribs:
-            for cmd in block.attribs['commands']:
-                if cmd != '--vyabsg-no-command--':
-                    if cmd == '--vyabsg-empty-command-suffix--':
-                        cmd = ''
-                    aliasInfo['commands'].append(cmd)
+        aliasInfo = block.attribs
+
         if block.subblocks:
             aliasInfo['sub-aliases'] = []
         for subblock in block.subblocks:
