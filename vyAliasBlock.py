@@ -5,9 +5,6 @@ class Generic():
     pass
 
 class VyAliasBlock(VyConfigFileBlock):
-    def __init__(self):
-        super().__init__()
-
     def process(self, prefix, labelSource):
         self.prefix = prefix
         attribs = self.attribs

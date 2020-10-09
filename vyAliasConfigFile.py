@@ -22,15 +22,14 @@ class VyAliasConfigFile(VyConfigFile):
         for subBlock in parsed.subBlocks:
             if isinstance(subBlock, VyAliasBlock):
                 # TODO: check, should come here only once
+                aliasRootBlock = subBlock
                 helpAliasBlock = VyAliasBlock()
                 helpAliasBlock.attribs = {
                     'aliases'   : 'h, --vyabsg-null-alias--, -h, --help', 
                     'label'     : 'help', 
                     'snippet'   : 'This help message',
                 }
-                subBlock.subBlocks.insert(0, helpAliasBlock)
-                aliasRootBlock = subBlock
-                aliasRootBlock.postParse() # set level and parent
+                aliasRootBlock.addChildBlock(helpAliasBlock, idx=0)
             elif isinstance(subBlock, VyAliasEnvVarHeaderBlock):
                 envVarInfos = subBlock.subBlocks
             elif isinstance(subBlock, VyAliasConfigBlock):
