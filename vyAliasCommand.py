@@ -34,13 +34,14 @@ class VyAliasCommand():
         self.hasChildren = False
 
         self.primaryAlias = self.aliases[0]
-        self.label = aliasInfo['label'] if 'label' in aliasInfo else None
-        if self.label is None:
+        if 'label' not in aliasInfo:
             if labelSource == 'command':
                 self.verb = self.commands[0].split(' ')[0] if len(self.commands) else None
                 self.label = aliasInfo['label'] if 'label' in aliasInfo else self.verb
-            else:
+            elif labelSource == 'alias':
                 self.label = self.primaryAlias
+            else:
+                raise Exception('Invalid label source')
 
         self.final = Generic()
         self.final.primaryAlias = ' '.join([self.prefix.alias, self.primaryAlias]).strip(' ')
@@ -105,6 +106,12 @@ class VyAliasCommand():
                 prefix=subPrefix, labelSource=labelSource)
             self.subAliases.append(ac)
 
+    def __setattr__(self, attr, value):
+        if attr in ['label']:
+            self.aliasInfo[attr] = value
+        else:
+            super().__setattr__(attr, value)
+
     def __getattr__(self, attr):
         if attr == 'firstchild':
             if self.parent == None:
@@ -120,7 +127,7 @@ class VyAliasCommand():
                 return True
             else:
                 return False
-        elif attr in ['aliases', 'commands']:
+        elif attr in ['aliases', 'commands', 'label']:
             return self.aliasInfo[attr]
 
     def traverse(self):

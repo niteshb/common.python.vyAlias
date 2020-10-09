@@ -5,6 +5,7 @@
 ### Code
 
 * jinja templating
+* fix bug in vyAliasCommand.py > argumentsMapper
 * solve make make issue
 * typing: all around
 * typing: NewType
