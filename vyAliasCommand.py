@@ -4,12 +4,10 @@ class Generic():
     pass
 
 class VyAliasCommandsTree():
-    def __init__(self, aliasInfos, **config):
-        assert(len(aliasInfos) == 1)
-        aliasInfo = aliasInfos[0]
-        assert('sub-aliases' in aliasInfo[2])
+    def __init__(self, aliasInfoRoot, **config):
+        assert('sub-aliases' in aliasInfoRoot)
         labelSource = config['label-source'] if 'label-source' in config else 'alias'
-        self.root = VyAliasCommand(*aliasInfo, labelSource=labelSource)
+        self.root = VyAliasCommand(aliasInfoRoot, labelSource=labelSource)
     
     def traverse(self):
         return self.root.traverse()
@@ -22,30 +20,25 @@ rootPrefix.label = ''
 class VyAliasCommand():
     def __init__(
             self, 
-            aliases, 
-            commands, 
-            aliasDict, 
+            aliasInfo, 
             level=0, 
             parent=None,
             labelSource='alias',
             prefix=rootPrefix
         ):
-        self.aliases = aliases
-        self.commands = commands
-        self.aliasDict = aliasDict
+        self.aliasInfo = aliasInfo
         self.level = level
         self.parent = parent
         self.prefix = prefix
         self.subAliases = []
         self.hasChildren = False
-        keys = aliasDict.keys()
 
-        self.primaryAlias = aliases[0]
-        self.label = aliasDict['label'] if 'label' in keys else None
+        self.primaryAlias = self.aliases[0]
+        self.label = aliasInfo['label'] if 'label' in aliasInfo else None
         if self.label is None:
             if labelSource == 'command':
-                self.verb = commands[0].split(' ')[0] if len(commands) else None
-                self.label = aliasDict['label'] if 'label' in keys else self.verb
+                self.verb = self.commands[0].split(' ')[0] if len(self.commands) else None
+                self.label = aliasInfo['label'] if 'label' in aliasInfo else self.verb
             else:
                 self.label = self.primaryAlias
 
@@ -80,11 +73,10 @@ class VyAliasCommand():
                     self.argumentsMapper[matchStr] = [consumed]
                     cmd = cmd[:span[0]] + f'%{consumed}' + cmd[span[1]:]
             self.final.execCommands.append(cmd)
-            #print([mo.group(idx) for idx in range(mo.groups())])
         self.commandsStr = '\n'.join(self.final.execCommands)
 
-        if 'snippet' in keys:
-            snippet = aliasDict['snippet']
+        if 'snippet' in aliasInfo:
+            snippet = aliasInfo['snippet']
             if snippet[:3] == '<= ':
                 self.command_snippet = []
                 snippet = snippet[3:]
@@ -94,11 +86,11 @@ class VyAliasCommand():
         self.final.snippet = ' : '.join(self.command_snippet + self.snippet)
         for char in ['<', '>', '&']: # this escaping is not perfect. "<" should not be escaped
             self.final.snippet = self.final.snippet.replace(char, '^' + char)
-        if 'sub-aliases' not in keys:
+        if 'sub-aliases' not in aliasInfo:
             return
-        assert(len(commands) <= 1)
+        assert(len(self.commands) <= 1)
         self.hasChildren = True
-        for aliasInfo in aliasDict['sub-aliases']:
+        for subAliasInfo in aliasInfo['sub-aliases']:
             thisPrefix = Generic()
             thisPrefix.command = self.commands[0] if len(self.commands) else ''
             thisPrefix.alias = self.aliases[0]
@@ -109,7 +101,7 @@ class VyAliasCommand():
             subPrefix.alias = self.final.primaryAlias
             subPrefix.label = self.final.label
 
-            ac = VyAliasCommand(*aliasInfo, level=level+1, parent=self, 
+            ac = VyAliasCommand(subAliasInfo, level=level+1, parent=self, 
                 prefix=subPrefix, labelSource=labelSource)
             self.subAliases.append(ac)
 
@@ -128,6 +120,8 @@ class VyAliasCommand():
                 return True
             else:
                 return False
+        elif attr in ['aliases', 'commands']:
+            return self.aliasInfo[attr]
 
     def traverse(self):
         self.traversalState = 'pre'

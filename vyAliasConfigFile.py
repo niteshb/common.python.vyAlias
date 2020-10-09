@@ -20,16 +20,21 @@ class VyAliasConfigFile(VyConfigFile):
         configInfos = {}
         for subblock in parsed.subblocks:
             if isinstance(subblock, VyAliasesBlock):
-                aliasInfos = [self.processAliasBlock(subblock)] # TODO: check, should come here only once
-                helpAliasInfo = (['h', '', '-h', '--help'], [], {'label': 'help', 'snippet': 'This help message'})
-                aliasInfos[0][2]['sub-aliases'].insert(0, helpAliasInfo)
+                aliasInfoRoot = self.processAliasBlock(subblock) # TODO: check, should come here only once
+                helpAliasInfo = {
+                    'aliases'   : ['h', '', '-h', '--help'], 
+                    'commands'  : [], 
+                    'label'     : 'help', 
+                    'snippet'   : 'This help message',
+                }
+                aliasInfoRoot['sub-aliases'].insert(0, helpAliasInfo)
             elif isinstance(subblock, VyAliasEnvVarHeaderBlock):
                 envVarInfos = self.processEnvVarBlock(subblock)
             elif isinstance(subblock, VyAliasConfigBlock):
                 configInfos = subblock.attribs
             else:
                 raise Exception('Unexpected return from VyConfigFile.parse')
-        return aliasInfos, envVarInfos, configInfos
+        return aliasInfoRoot, envVarInfos, configInfos
 
     def processEnvVarBlock(self, block):
         envVarInfos = []
@@ -44,23 +49,26 @@ class VyAliasConfigFile(VyConfigFile):
         idx = 0
         raw_aliases = block.attribs['aliases']
         aliases = ['' if alias.strip().lower() == '--vyabsg-null-alias--' else alias.strip() for alias in raw_aliases.split(',')]
-        aliasInfo = (aliases, [], {})
+        aliasInfo = {
+            'aliases'   : aliases, 
+            'commands'  : [], 
+        }
         if 'label' in block.attribs:
             val = block.attribs['label']
             if val.lower() == '--vyabsg-null-label--':
                 val = ''
-            aliasInfo[2]['label'] = val
+            aliasInfo['label'] = val
         if 'snippet' in block.attribs:
-            aliasInfo[2]['snippet'] = block.attribs['snippet']
+            aliasInfo['snippet'] = block.attribs['snippet']
         if 'commands' in block.attribs:
             for cmd in block.attribs['commands']:
                 if cmd != '--vyabsg-no-command--':
                     if cmd == '--vyabsg-empty-command-suffix--':
                         cmd = ''
-                    aliasInfo[1].append(cmd)
+                    aliasInfo['commands'].append(cmd)
         if block.subblocks:
-            aliasInfo[2]['sub-aliases'] = []
+            aliasInfo['sub-aliases'] = []
         for subblock in block.subblocks:
             subAliasInfo = self.processAliasBlock(subblock)
-            aliasInfo[2]['sub-aliases'].append(subAliasInfo)
+            aliasInfo['sub-aliases'].append(subAliasInfo)
         return aliasInfo

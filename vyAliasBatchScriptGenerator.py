@@ -10,7 +10,7 @@ class VyCOIdx():
 
 def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName=None):
     acf = VyAliasConfigFile(configFilePath)
-    aliasInfos, envVarInfos, configInfos = acf.parse()
+    aliasInfoRoot, envVarInfos, configInfos = acf.parse()
 
     cmdTemplates = None
     envVarTemplates = None
@@ -19,7 +19,7 @@ def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName
     cmdTemplates = subTemplates.cmdTemplates
     envVarTemplates = subTemplates.envVarTemplates
 
-    tree = VyAliasCommandsTree(aliasInfos, **configInfos)
+    tree = VyAliasCommandsTree(aliasInfoRoot, **configInfos)
     tree.root.final.label = 'Switcher'
 
     envVarOutputs = [''] * len(envVarTemplates)
