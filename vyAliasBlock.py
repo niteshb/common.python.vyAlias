@@ -8,13 +8,9 @@ class VyAliasBlock(VyConfigFileBlock):
     def __init__(self):
         super().__init__()
 
-    def process(self, prefix, labelSource, level=0, parent=None):
+    def process(self, prefix, labelSource):
         self.prefix = prefix
-        self.level = level
-        self.parent = parent
-
         attribs = self.attribs
-        self.hasChildren = bool(len(self.subAliasBlocks))
 
         self.aliases = ['' if alias.strip().lower() == '--vyabsg-null-alias--' else alias.strip() for alias in self.aliases.split(',')]
         self.primaryAlias = self.aliases[0]
@@ -94,8 +90,7 @@ class VyAliasBlock(VyConfigFileBlock):
             subPrefix.alias = self.final.primaryAlias
             subPrefix.label = self.final.label
 
-            subAliasBlock.process(level=level+1, parent=self, 
-                prefix=subPrefix, labelSource=labelSource)
+            subAliasBlock.process(prefix=subPrefix, labelSource=labelSource)
 
     def __setattr__(self, attr, value):
         if attr in ['label']:

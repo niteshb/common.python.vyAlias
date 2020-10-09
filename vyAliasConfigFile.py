@@ -29,11 +29,12 @@ class VyAliasConfigFile(VyConfigFile):
                     'snippet'   : 'This help message',
                 }
                 subBlock.subBlocks.insert(0, helpAliasBlock)
-                aliasBlock = subBlock
+                aliasRootBlock = subBlock
+                aliasRootBlock.postParse() # set level and parent
             elif isinstance(subBlock, VyAliasEnvVarHeaderBlock):
                 envVarInfos = subBlock.subBlocks
             elif isinstance(subBlock, VyAliasConfigBlock):
                 configInfos = subBlock.attribs
             else:
                 raise Exception('Unexpected return from VyConfigFile.parse')
-        return aliasBlock, envVarInfos, configInfos
+        return aliasRootBlock, envVarInfos, configInfos
