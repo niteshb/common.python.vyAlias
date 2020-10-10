@@ -1,2 +1,1 @@
-from .vyAliasBlock import VyAliasBlock
 from .vyAliasBatchScriptGenerator import vyAliasBatchScriptGenerator

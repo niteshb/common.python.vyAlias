@@ -1,11 +1,19 @@
 import os
+from typing import Optional
 from jinja2 import Template
 from .vyAliasConfigFile import VyAliasConfigFile
-from .vyAliasBlock import rootPrefix
+from .vyAliasBlock import VyAliasBlock, rootPrefix
 
-def vyAliasBatchScriptGenerator(configFilePath, outputFolder='.', outputFileName=None):
-    acf = VyAliasConfigFile(configFilePath)
-    aliasRootBlock, envVarInfos, configInfos = acf.parse()
+def vyAliasBatchScriptGenerator(configFilePath: str, outputFolder: str='.', outputFileName: Optional[str]=None):
+    aliasRootBlock, envVarInfos, configInfos = VyAliasConfigFile(configFilePath).parse()
+    # Add help block
+    helpAliasBlock = VyAliasBlock()
+    helpAliasBlock.attribs = {
+        'aliases'   : 'h, --vyabsg-null-alias--, -h, --help', 
+        'label'     : 'help', 
+        'snippet'   : 'This help message',
+    }
+    aliasRootBlock.addChildBlock(helpAliasBlock, idx=0)
 
     if 'label-source' in configInfos:
         if configInfos['label-source'] not in ['alias', 'command']:

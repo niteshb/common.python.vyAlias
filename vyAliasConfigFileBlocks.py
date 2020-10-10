@@ -4,7 +4,8 @@ This defines the different kind of blocks in an .alias file
 """
 
 from vyConfigFileParser import VyConfigFileBlock
-from . import VyAliasBlock
+from .vyAliasBlock import VyAliasBlock
+
 """
     Aliases
     indent-0: aliases
