@@ -1,0 +1,9 @@
+t
+    echo test
+        a
+            all
+            snippet: test everything
+        d
+            -branch development
+            label: dev
+            snippet: test the development branch only

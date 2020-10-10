@@ -46,3 +46,4 @@ def vyAliasBatchScriptGenerator(configFilePath: str, outputFolder: str='.', outp
     with open(outputFilePath, 'w') as ofid:
         ofid.write(out)
         ofid.close()
+    return outputFilePath, outputFileName

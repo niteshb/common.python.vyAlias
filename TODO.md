@@ -4,7 +4,7 @@
 
 ### Code
 
-* jinja templating
+* implement logging or vyDebug in all projects
 * fix bug in vyAliasCommand.py > argumentsMapper
 * solve make make issue
 * typing: all around
@@ -19,6 +19,9 @@
 
 ### Code Management
 
+* a good directory structure for python packages
+  * DONE: good for development, testing, publishing, setup, code-management
+  * TODO: BE A GURU FOR THIS
 * mypy, pytypes auto run
 * linting with black
 * integrate the above with vscode
@@ -31,6 +34,7 @@
 
 ### Code
 
+* jinja templating
 * config: auto-help
 * config: labels from aliases rather from commands
 * hide __labels in help
