@@ -1,1 +1,1 @@
-from .vyAliasBatchScriptGenerator import vyAliasBatchScriptGenerator
+from .src import vyAliasBatchScriptGenerator
