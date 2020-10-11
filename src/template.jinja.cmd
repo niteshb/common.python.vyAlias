@@ -27,14 +27,14 @@ REM Actual start of the program
 if x%VY_GIT_CMD_{{ envvar["envVar"] }}%==x SET VY_GIT_CMD_{{ envvar["envVar"] }}={{ envvar["default"] }}
 {%- endfor %}
 {% for aliasObj in aliasQueue %}
-{%-     if aliasObj.firstchild %}
+{%-     if aliasObj.isFirstChild %}
 :label_{{ aliasObj.parent.final.label }}
 if x%VY_ALIAS_BATCH_GEN_NO_DEBUG%==x echo label_{{ aliasObj.parent.final.label }} & REM ({{ aliasObj.parent.final.label }}) <- ({{ aliasObj.final.label }})
 {%-     endif %}
 {%-     for alias in aliasObj.aliases %}
 if x%{{ aliasObj.level }}==x{{ '{0:<9}'.format(alias) }} GOTO label_{{ aliasObj.final.label }}
 {%-     endfor %}
-{%-     if aliasObj.lastchild %}
+{%-     if aliasObj.isLastChild %}
 GOTO label_invalid & REM ({{ aliasObj.parent.final.label }}) <- ({{ aliasObj.final.label }})
 {%-     endif %}
 {%- endfor %}
