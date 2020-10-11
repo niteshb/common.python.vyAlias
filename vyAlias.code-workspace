@@ -17,9 +17,12 @@
 		},
 		{
 			"path": "../../misc/vyConda"
+		},
+		{
+			"path": "../vyTree"
 		}
 	],
 	"settings": {
-		"python.pythonPath": "tests\\.venv\\Scripts\\python.exe"
+		"python.pythonPath": "${workspaceFolder}/tests/.venv/Scripts"
 	}
 }

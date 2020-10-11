@@ -13,7 +13,7 @@ def vyAliasBatchScriptGenerator(configFilePath: str, outputFolder: str='.', outp
         'label'     : 'help', 
         'snippet'   : 'This help message',
     }
-    aliasRootBlock.addChildBlock(helpAliasBlock, idx=0)
+    aliasRootBlock.insertChildBlock(0, helpAliasBlock)
 
     if 'label-source' in configInfos:
         if configInfos['label-source'] not in ['alias', 'command']:
