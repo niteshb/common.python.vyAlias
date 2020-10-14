@@ -1,5 +1,6 @@
 import re
 from vyConfigFileParser import VyConfigFileBlock
+import vyConsoleEscapes as vce
 
 class Generic():
     pass
@@ -9,7 +10,7 @@ rootPrefix.alias = ''
 rootPrefix.label = ''
 
 class VyAliasBlock(VyConfigFileBlock):
-    def process(self, prefix, labelSource):
+    def process(self, prefix, configInfos):
         self.prefix = prefix
         attribs = self.attribs
 
@@ -28,13 +29,17 @@ class VyAliasBlock(VyConfigFileBlock):
             if self.label.lower() == '--vyabsg-null-label--':
                 self.label = ''
         else:
-            if labelSource == 'command':
+            if configInfos['label-source'] == 'command':
                 self.label = self.commands[0].split(' ')[0] if len(self.commands) else ''
-            else: #  labelSource == 'alias'
+            else: #  configInfos['label-source'] == 'alias'
                 self.label = self.primaryAlias
 
         self.final = Generic()
         self.final.primaryAlias = ' '.join([self.prefix.alias, self.primaryAlias]).strip(' ')
+        self.final.aliasSnippet = '{0:<11}'.format(self.final.primaryAlias)
+        if 'color-alias' in configInfos:
+            self.final.aliasSnippet = vce.format(self.final.aliasSnippet, fgColor=configInfos['color-alias'])
+
         self.final.label = '_'.join([self.prefix.label, self.label]).strip('_')
         self.final.commands = []
         for cmd in self.commands:
@@ -43,7 +48,16 @@ class VyAliasBlock(VyConfigFileBlock):
             else:
                 newCmd = ' '.join([self.prefix.command, cmd]).strip(' ')
             self.final.commands.append(newCmd)
-        self.command_snippet = [self.final.commands[0]] if self.final.commands and self.final.commands[0] else []
+        
+        # set up command-snippet
+        if self.final.commands and self.final.commands[0]:
+            cmdSnippet = self.final.commands[0]
+            if 'color-command' in configInfos:
+                cmdSnippet = vce.format(cmdSnippet, fgColor=configInfos['color-command'])
+            self.command_snippet = [cmdSnippet]
+        else:
+            self.command_snippet = []
+
         self.final.execCommands = []
         self.argumentsMapper = {}
         for cmd in self.final.commands:
@@ -71,6 +85,8 @@ class VyAliasBlock(VyConfigFileBlock):
             if snippet[:3] == '<= ':
                 self.command_snippet = []
                 snippet = snippet[3:]
+            if 'color-snippet' in configInfos:
+                snippet = vce.format(snippet, fgColor=configInfos['color-snippet'])
             self.snippet = [snippet]
         else:
             self.snippet = []
@@ -91,7 +107,7 @@ class VyAliasBlock(VyConfigFileBlock):
             subPrefix.alias = self.final.primaryAlias
             subPrefix.label = self.final.label
 
-            subAliasBlock.process(prefix=subPrefix, labelSource=labelSource)
+            subAliasBlock.process(subPrefix, configInfos)
 
     def __setattr__(self, attr, value):
         if attr in ['label']:

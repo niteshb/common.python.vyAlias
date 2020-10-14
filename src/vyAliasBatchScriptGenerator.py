@@ -21,7 +21,7 @@ def vyAliasBatchScriptGenerator(configFilePath: str, outputFolder: str='.', outp
     else:
         configInfos['label-source'] = 'alias'
 
-    aliasRootBlock.process(rootPrefix, configInfos['label-source'])
+    aliasRootBlock.process(rootPrefix, configInfos)
     assert(aliasRootBlock.hasChildren)
     aliasRootBlock.final.label = 'Switcher'
 

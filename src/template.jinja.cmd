@@ -50,7 +50,7 @@ GOTO label_exit
 @echo Command Options:
 {%- for aliasObj in aliasRootBlock.traverse() %}
 {%-     if aliasObj.traversalState == 'pre' and not aliasObj.hasChildren %}
-@echo   {{ '{0:<11}'.format(aliasObj.final.primaryAlias) }}   : {{ aliasObj.final.snippet }}
+@echo   {{ aliasObj.final.aliasSnippet }}   : {{ aliasObj.final.snippet }}
 {%-     endif %}
 {%- endfor %}
 @echo.

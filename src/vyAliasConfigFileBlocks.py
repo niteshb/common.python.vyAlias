@@ -23,19 +23,23 @@ VyAliasBlock.indentLevelMarkers = {
 
 class VyAliasConfigBlock(VyConfigFileBlock):
     indentLevelMarkers = {
-        0: { ('vyalias', 'config')              : { 'target': None },},
-        1: { ('label-source', '(alias|command)'): {},}
+        0: { ('vyalias', 'config')                  : { 'target': None },},
+        1: { ('label-source', '(alias|command)')    : {},
+             ('color-(alias|command|snippet)', 
+                 '((normal|strong)-)?(black|red|green|yellow|blue|magenta|cyan|white)') 
+                                                    : {},
+        },
     }
 
 class VyAliasEnvVarBlock(VyConfigFileBlock):
     indentLevelMarkers = {
-        0: { (None, '.*')                       : { 'target': 'envVar',} },
-        1: { ('(default|[tT]arget)', '.*')      : {}, }
+        0: { (None, '.*')                           : { 'target': 'envVar',} },
+        1: { ('(default|[tT]arget)', '.*')          : {}, }
     }
 
 class VyAliasEnvVarHeaderBlock(VyConfigFileBlock):
     indentLevelMarkers = {
-        0: { ('vyalias', 'envvar')              : { 'target': None },},
+        0: { ('vyalias', 'envvar')                  : { 'target': None },},
         1:   [VyAliasEnvVarBlock,],
     }
 
